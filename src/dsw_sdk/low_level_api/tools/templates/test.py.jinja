@@ -1,0 +1,65 @@
+from typing import Any, Dict, Optional
+
+from dsw_sdk.common.utils import to_camel_case
+from dsw_sdk.http_client.interface import HttpClient, HttpResponse
+
+
+class LowLevelAPI:
+    """
+    Low-level API mirroring 1:1 the Data Stewardship Wizard API. It contains
+    one method for each combination of HTTP method and API endpoint.
+
+    If the endpoint accepts query parameters or body, the method accept
+    these as well. Keys in both query params and body are converted to
+    `camelCase`, so you can pass them in `snake_case` if you want.
+
+    Note that this class is *generated* by a script, not written by hand.
+    """
+    def __init__(self, http_client: HttpClient):
+        """
+        :param http_client: Some instance of the :class:`~interface.HttpClient`
+                            interface.
+        """
+        self._http_client = http_client
+
+    def _camelize_dict_keys(self, data: Any) -> Any:
+        if isinstance(data, dict):
+            return {to_camel_case(k): self._camelize_dict_keys(v)
+                    for k, v in data.items()}
+        elif isinstance(data, list):
+            return [self._camelize_dict_keys(val) for val in data]
+        else:
+            return data
+
+
+{%- for func in functions -%}
+    {% set query_params = ', params=query_params' if func['query_params'] else '' %}
+    {% set body = ', body=body' if func['body'] else '' %}
+    def {{ func['http_method'] }}_{{ func['func_name'] }}({{ func['func_params'] }}) -> HttpResponse:
+        {%- if func['body'] or func['query_params'] %}
+        """
+        {%- if func['body'] %}
+        body:
+            {%- for param in func['body'] %}
+            {{ param['name'] }}: {{ param['type'] }}
+            {%- endfor %}
+        {% endif -%}
+
+        {%- if func['query_params'] %}
+        query_params:
+            {%- for param in func['query_params'] %}
+            {{ param['name'] }} [optional]: {{ param['type'] }}
+            {%- endfor %}
+        {% endif %}
+        """
+        {%- endif -%}
+        {%- if query_params %}
+        query_params = self._camelize_dict_keys(query_params)
+        {%- endif %}
+        {%- if body %}
+        body = self._camelize_dict_keys(body)
+        {%- endif %}
+        return self._http_client.{{ func['http_method'] }}(f'{{ func['path'] }}'{{ body }}{{ query_params }}, **kwargs)
+
+{%- endfor %}
+

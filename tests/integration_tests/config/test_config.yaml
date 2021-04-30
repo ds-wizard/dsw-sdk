@@ -1,0 +1,9 @@
+dsw_sdk:
+  enable_ssl: false
+  auth_endpoint: '/tokens'
+  headers:
+    'X-TEST-HEADER': 'TEST HEADER VALUE'
+    A: '1'
+  default_timeout:
+    - 6
+    - 120

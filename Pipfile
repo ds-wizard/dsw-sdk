@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+[requires]
+python_version = "3.7"
+
+[packages]
+pyjwt = "*"
+pyyaml = "*"
+requests = "*"
+
+[dev-packages]
+atomicwrites = "*"  # Windows dependency
+betamax = "*"
+flake8 = "*"
+jinja2 = "*"
+mock = "*"
+mypy = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-data = "*"
+sphinx = "*"
+tox = "*"

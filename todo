@@ -1,0 +1,15 @@
+- HTTP client retry
+- User.groups can be edited (e.g. adding a new item to the list) and it
+  doesn't even have to be a valid type (e.g. inserting a number)
+  => some kind of immutable List?
+- Lazy-loaded attribute
+
+
+- Distribution
+- Documentation
+- Metrics (Flake8, MyPy, PyLint)
+- Finish the tests
+
+
+API bugs:
+- PUT template, changing `template_id` results in 500 Internal server error

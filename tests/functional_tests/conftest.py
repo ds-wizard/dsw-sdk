@@ -1,0 +1,228 @@
+import random
+import string
+
+import pytest
+from pytest_data import get_data
+
+from dsw_sdk.high_level_api.dto.questionnaire import (
+    PRIVATE_QUESTIONNAIRE,
+    RESTRICTED_QUESTIONNAIRE,
+)
+from dsw_sdk.high_level_api.models.document import (
+    Document,
+)
+from dsw_sdk.high_level_api.models.questionnaire import Questionnaire
+from dsw_sdk.high_level_api.models.templates.template import Template
+from dsw_sdk.high_level_api.models.templates.template_asset import (
+    TemplateAsset,
+)
+from dsw_sdk.high_level_api.models.templates.template_file import TemplateFile
+from dsw_sdk.high_level_api.models.user import User
+
+
+# ------------------------------- Clean up -----------------------------------
+
+
+def _clean(dsw_sdk):
+    data = dsw_sdk.api.get_branches({'q': 'test'}).json()
+    branches = data['_embedded']['branches']
+    for branch in branches:
+        dsw_sdk.api.delete_branch(branch['uuid'])
+
+    data = dsw_sdk.api.get_questionnaires({'q': 'test'}).json()
+    questionnaires = data['_embedded']['questionnaires']
+    for questionnaire in questionnaires:
+        dsw_sdk.api.delete_questionnaire(questionnaire['uuid'])
+
+    data = dsw_sdk.api.get_packages({'q': 'test'}).json()
+    packages = data['_embedded']['packages']
+    for package in packages:
+        dsw_sdk.api.delete_package(package['id'])
+
+    data = dsw_sdk.api.get_documents({'q': 'Test'}).json()
+    documents = data['_embedded']['documents']
+    for document in documents:
+        dsw_sdk.api.delete_document(document['uuid'])
+
+    data = dsw_sdk.api.get_templates({'q': 'Test template'}).json()
+    templates = data['_embedded']['templates']
+    for template in templates:
+        dsw_sdk.api.delete_template(template['id'])
+
+    data = dsw_sdk.api.get_users({'q': 'doe'}).json()
+    users = data['_embedded']['users']
+    for user in users:
+        dsw_sdk.api.delete_user(user['uuid'])
+
+
+@pytest.fixture(scope='module', autouse=True)
+def clean(dsw_sdk):
+    _clean(dsw_sdk)
+    yield
+    _clean(dsw_sdk)
+
+
+# ------------------------------- Templates ----------------------------------
+
+
+def _create_template(dsw_sdk, template_data):
+    template_data['allowed_packages'] = [package.to_json() for package in
+                                         template_data['allowed_packages']]
+    files_data = template_data.pop('files')
+    assets_data = template_data.pop('assets')
+    # Create template
+    template_data = dsw_sdk.api.post_templates(body=template_data).json()
+    # Get the template detail to load all the attributes
+    template_data.update(dsw_sdk.api.get_template(template_data['id']).json())
+    template = Template(dsw_sdk, __update_attrs=template_data)
+    # Create template files
+    files = []
+    for file_data in files_data:
+        file = TemplateFile(dsw_sdk, **file_data,
+                            template_id=template_data['id'])
+        file.save()
+        files.append(file)
+    template._update_attrs(files=files)
+    # Create template assets
+    assets = []
+    for asset_data in assets_data:
+        asset = TemplateAsset(dsw_sdk, **asset_data,
+                              template_id=template_data['id'])
+        asset.save()
+        assets.append(asset)
+    template._update_attrs(assets=assets)
+    return template
+
+
+@pytest.fixture
+def template(dsw_sdk, template_data):
+    return _create_template(dsw_sdk, template_data)
+
+
+@pytest.fixture
+def templates(request, dsw_sdk, template_data):
+    data = get_data(request, 'templates_data', [{}])
+    templates = []
+    for d in data:
+        random_id = ''.join(random.choices(string.ascii_letters, k=10))
+        template_data['template_id'] = random_id
+        templates.append(_create_template(dsw_sdk, {**template_data, **d}))
+    return templates
+
+
+@pytest.fixture
+def registry_template_id(dsw_sdk):
+    id_ = 'dsw:science-europe:1.4.1'
+    yield id_
+    dsw_sdk.templates.delete_templates(ids=[id_])
+
+
+@pytest.fixture
+def registry_outdated_template_id(dsw_sdk):
+    id_ = 'dsw:science-europe:1.4.0'
+    yield id_
+    dsw_sdk.templates.delete_templates(ids=[id_])
+
+
+# ---------------------------- Knowledge models ------------------------------
+
+
+@pytest.fixture(scope='module')
+def branch(dsw_sdk):
+    return dsw_sdk.api.post_branches(body={
+        'km_id': 'test-km',
+        'name': 'Test KM',
+    }).json()
+
+
+@pytest.fixture(scope='module')
+def package(dsw_sdk, branch):
+    return dsw_sdk.api.put_branch_version(branch['uuid'], '1.0.0', body={
+        'readme': 'Test readme',
+        'license': 'Test license',
+        'description': 'Test description',
+    }).json()
+
+
+@pytest.fixture
+def registry_package_id(dsw_sdk):
+    km_id = 'root'
+    id_ = f'dsw:{km_id}:2.3.0'
+    yield id_
+    dsw_sdk.api.delete_packages(query_params={'kmId': km_id})
+
+
+# ----------------------------- Questionnaires -------------------------------
+
+
+def _create_questionnaire(dsw_sdk, package, data=None):
+    uuid = dsw_sdk.api.post_questionnaires(body={
+        'name': 'Test',
+        'packageId': package['id'],
+        'visibility': PRIVATE_QUESTIONNAIRE,
+        'sharing': RESTRICTED_QUESTIONNAIRE,
+        'tagUuids': [],
+        **(data or {}),
+    }).json()['uuid']
+    questionnaire_data = dsw_sdk.api.get_questionnaire(uuid).json()
+    return Questionnaire(dsw_sdk, __update_attrs=questionnaire_data)
+
+
+@pytest.fixture
+def questionnaire(dsw_sdk, package):
+    return _create_questionnaire(dsw_sdk, package)
+
+
+@pytest.fixture
+def questionnaires(request, dsw_sdk, package):
+    data = get_data(request, 'questionnaires_data', [{}])
+    return [_create_questionnaire(dsw_sdk, package, d) for d in data]
+
+
+# ------------------------------- Documents ----------------------------------
+
+
+def _create_document(dsw_sdk, questionnaire, data=None):
+    document_data = dsw_sdk.api.post_documents(body={
+        'name': 'Test document',
+        'questionnaire_uuid': questionnaire.uuid,
+        'template_id': 'dsw:questionnaire-report:1.3.0',
+        'format_uuid': 'd3e98eb6-344d-481f-8e37-6a67b6cd1ad2',
+        **(data or {}),
+    }).json()
+    return Document(dsw_sdk, __update_attrs=document_data)
+
+
+@pytest.fixture
+def document(dsw_sdk, questionnaire):
+    return _create_document(dsw_sdk, questionnaire)
+
+
+@pytest.fixture
+def documents(request, dsw_sdk, questionnaire):
+    data = get_data(request, 'documents_data', [{}])
+    return [_create_document(dsw_sdk, questionnaire, d) for d in data]
+
+
+# ---------------------------------- Users -----------------------------------
+
+
+def _create_user(dsw_sdk, data):
+    user_data = dsw_sdk.api.post_users(body=data).json()
+    return User(dsw_sdk, __update_attrs=user_data)
+
+
+@pytest.fixture
+def user(dsw_sdk, user_data):
+    return _create_user(dsw_sdk, user_data)
+
+
+@pytest.fixture
+def users(request, dsw_sdk, user_data):
+    data = get_data(request, 'users_data', [{}])
+    users = []
+    for d in data:
+        email = ''.join(random.choices(string.ascii_letters, k=10))
+        user_data['email'] = f'{email}@example.com'
+        users.append(_create_user(dsw_sdk, {**user_data, **d}))
+    return users
