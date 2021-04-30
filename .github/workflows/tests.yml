@@ -1,8 +1,14 @@
 # This workflow will install Python dependencies and run tests.
 
-name: Python tests
+name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   tests:
@@ -26,7 +32,7 @@ jobs:
       env:
         # Disable the spinner as it massively pollutes the output
         TOX_PARALLEL_NO_SPINNER: 1
-      # Running tests in parallel
+      # Running tests in parallel with `-p` option
       run: |
         tox -e unit_tests,integration_tests -p
     - name: Upload test results
@@ -41,7 +47,7 @@ jobs:
     name: "Publish tests results"
     needs: [tests]
     runs-on: ubuntu-latest
-    # The linux-tests job might be skipped, we don't need to run this job then
+    # The `tests` job might be skipped, we don't need to run this job then
     if: success() || failure()
 
     steps:
