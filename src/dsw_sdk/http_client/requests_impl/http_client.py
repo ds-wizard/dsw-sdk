@@ -35,6 +35,10 @@ class RequestsHttpResponse(HttpResponse):
         self._response = response
 
     @property
+    def path(self) -> str:
+        return self._response.request.path_url
+
+    @property
     def orig_response(self) -> Any:
         return self._response
 
@@ -171,12 +175,12 @@ class SessionHttpClient(HttpClient):
             res.raise_for_status()
         except requests.HTTPError as err:
             if err.response.status_code == 400:
-                raise BadRequestError(path, err.response)
+                raise BadRequestError(err.response)
             if err.response.status_code == 403:
-                raise ForbiddenError(path, err.response)
+                raise ForbiddenError(err.response)
             if err.response.status_code == 404:
-                raise NotFoundError(path, err.response)
-            raise HttpError(path, err.response.status_code, err.response) from err
+                raise NotFoundError(err.response)
+            raise HttpError(err.response.status_code, err.response) from err
 
         self._logger.info(f'Request finished. Took about '
                           f'{time.time() - start_time:.2f} seconds.')

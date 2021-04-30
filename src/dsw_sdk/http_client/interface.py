@@ -15,6 +15,10 @@ class HttpResponse:
     accessible via the :meth:`orig_response` property.
     """
     @property
+    def path(self) -> str:
+        raise NotImplementedError
+
+    @property
     def orig_response(self) -> Any:
         raise NotImplementedError
 
@@ -34,14 +38,13 @@ class HttpError(Exception):
     """
     _default_msg = 'Http error'
 
-    def __init__(self, path: str, status_code: int, response: HttpResponse):
-        self.path = path
+    def __init__(self, status_code: int, response: HttpResponse):
         self.status_code = status_code
         self.msg = self._get_message(response)
         self.response = response
 
     def __str__(self):
-        return f'[{self.status_code}] {self.msg} ({self.path})'
+        return f'[{self.status_code}] {self.msg} ({self.response.path})'
 
     @classmethod
     def _get_message(cls, response: HttpResponse) -> str:
@@ -76,8 +79,8 @@ class BadRequestError(HttpError):
     """
     _default_msg = 'Bad request'
 
-    def __init__(self, path: str, response: HttpResponse):
-        super().__init__(path, 400, response)
+    def __init__(self, response: HttpResponse):
+        super().__init__(400, response)
 
 
 class ForbiddenError(HttpError):
@@ -87,8 +90,8 @@ class ForbiddenError(HttpError):
     """
     _default_msg = 'Forbidden'
 
-    def __init__(self, path: str, response: HttpResponse):
-        super().__init__(path, 403, response)
+    def __init__(self, response: HttpResponse):
+        super().__init__(403, response)
 
 
 class NotFoundError(HttpError):
@@ -98,8 +101,8 @@ class NotFoundError(HttpError):
     """
     _default_msg = 'Not found'
 
-    def __init__(self, path: str, response: HttpResponse):
-        super().__init__(path, 404, response)
+    def __init__(self, response: HttpResponse):
+        super().__init__(404, response)
 
 
 class UnexpectedAuthError(Exception):

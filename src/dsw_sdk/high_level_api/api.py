@@ -34,19 +34,17 @@ class API:
 
     def _get_many(self, func: Callable[[Dict[str, Any]], HttpResponse],
                   data_key: str, **query_params) -> List[T]:
-        if 'size' not in query_params:
-            query_params['size'] = 100
-
         self._last_response = func(query_params)
         response = self._last_response.json()
         data: List[Dict[str, Any]] = response['_embedded'][data_key]
 
-        if query_params.get('page') is None and query_params.get('size') is None:
+        if query_params.get('page') is None:
             page = 1
-            while response['page']['number'] != response['page']['totalPages']:
-                response = self._sdk.api.get_users(
-                    query_params={**query_params, 'page': page}
-                ).json()
+            while (
+                response['page']['number'] + 1 < response['page']['totalPages']
+                and len(data) < query_params.get('size', 2**32)
+            ):
+                response = func({**query_params, 'page': page}).json()
                 page += 1
                 data.extend(response['_embedded'][data_key])
 

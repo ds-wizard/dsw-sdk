@@ -42,6 +42,10 @@ integration_tests:
 functional_tests:
 	tox -e functional_tests
 
+record_test_cassettes:
+	rm -f tests/fixtures/cassettes/*
+	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --recreate-cassettes tests/
+
 # ------------------------------- Packaging ----------------------------------
 
 build:

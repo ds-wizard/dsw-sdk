@@ -21,8 +21,11 @@ ROOT_DIR = os.path.abspath(
 )
 
 
+CASSETTES_DIR = f'{ROOT_DIR}/tests/fixtures/cassettes'
+
+
 with Betamax.configure() as config:
-    config.cassette_library_dir = f'{ROOT_DIR}/tests/fixtures/cassettes'
+    config.cassette_library_dir = CASSETTES_DIR
 
 
 class NoAuthClient(SessionHttpClient):
@@ -48,6 +51,7 @@ def dsw_sdk(request, betamax_session):
         1) If you pass a `--recreate-cassettes` option to the pytest command
         when running the tests, it will connect to the DSW API, do every HTTP
         request and record it's response to a Betamax cassette.
+        Make sure that the cassettes folder is empty!
 
         2) If no option is passed, the SDK won't do any HTTP request at all.
         Instead, it will read the responses from the cassettes. If there is no
