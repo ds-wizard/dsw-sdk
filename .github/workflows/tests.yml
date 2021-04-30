@@ -4,8 +4,16 @@ name: Tests
 
 on:
   push:
-    branches:
-      - master
+    paths:
+      - '.github/workflows/tests.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'Pipfile.lock'
+      # Even if we change the packaging, we should test it as we are
+      # testing against installation and not the source codes only 
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'tox.ini'
   pull_request:
     branches:
       - master
