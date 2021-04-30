@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import mock
 import pytest
 
@@ -34,8 +32,8 @@ def loaded_user(sdk_mock, user_data):
 # ----------------------------------------------------------------------------
 
 
-def test_user_create(betamax_dsw_sdk, user_data):
-    user = User(betamax_dsw_sdk, **user_data)
+def test_user_create(dsw_sdk, user_data):
+    user = User(dsw_sdk, **user_data)
     user.save()
 
     for key, value in user_data.items():
@@ -46,13 +44,13 @@ def test_user_create(betamax_dsw_sdk, user_data):
             continue
         assert getattr(user, key) == value
     assert user.active is False
-    assert user.created_at == datetime(2021, 4, 28, 20, 55, 5)
+    assert user.created_at is not None
     assert user.groups == []
     assert user.image_url is None
     assert user.permissions == ['PM_READ_PERM', 'QTN_PERM',
                                 'DMP_PERM', 'SUBM_PERM']
     assert user.sources == ['internal']
-    assert user.updated_at == datetime(2021, 4, 28, 20, 55, 5)
+    assert user.updated_at is not None
     assert user.questionnaires == []
 
 

@@ -9,8 +9,8 @@ from dsw_sdk.high_level_api.models.templates.template_asset import (
 from dsw_sdk.high_level_api.models.templates.template_file import TemplateFile
 
 
-def test_create_template(betamax_dsw_sdk, template_data):
-    template = Template(betamax_dsw_sdk, **template_data)
+def test_create_template(dsw_sdk, template_data):
+    template = Template(dsw_sdk, **template_data)
     template.save()
 
     assert template.uuid is not None
@@ -25,8 +25,8 @@ def test_create_template_missing_attr(template_data):
     assert e.match(e.value.msg.format('description'))
 
 
-def test_create_template_with_files(betamax_dsw_sdk, template_data):
-    template = Template(betamax_dsw_sdk, **template_data)
+def test_create_template_with_files(dsw_sdk, template_data):
+    template = Template(dsw_sdk, **template_data)
     # When assigning to the list attribute, we can
     # pass dict representation of the object.
     template.files = [{
@@ -35,7 +35,7 @@ def test_create_template_with_files(betamax_dsw_sdk, template_data):
     }]
     # While extending an existing list, we must pass the actual object
     template.files.append(
-        TemplateFile(betamax_dsw_sdk, content='123', file_name='foo.txt'),
+        TemplateFile(dsw_sdk, content='123', file_name='foo.txt'),
     )
 
     template.save()
@@ -66,8 +66,8 @@ def test_update_template_with_files_with_id():
         template.save()
 
 
-def test_create_template_with_assets(betamax_dsw_sdk, template_data):
-    template = Template(betamax_dsw_sdk, **template_data)
+def test_create_template_with_assets(dsw_sdk, template_data):
+    template = Template(dsw_sdk, **template_data)
     # When assigning to the list attribute, we can
     # pass dict representation of the object.
     template.assets = [{
@@ -78,7 +78,7 @@ def test_create_template_with_assets(betamax_dsw_sdk, template_data):
     # While extending an existing list, we must pass the actual object
     template.assets.append(
         TemplateAsset(
-            betamax_dsw_sdk,
+            dsw_sdk,
             content='123',
             content_type='text/plain',
             file_name='foo.txt',

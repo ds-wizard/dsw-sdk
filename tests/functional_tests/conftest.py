@@ -55,7 +55,7 @@ def _clean(dsw_sdk):
         dsw_sdk.api.delete_user(user['uuid'])
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def clean(dsw_sdk):
     _clean(dsw_sdk)
     yield
@@ -127,7 +127,7 @@ def registry_outdated_template_id(dsw_sdk):
 # ---------------------------- Knowledge models ------------------------------
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def branch(dsw_sdk):
     return dsw_sdk.api.post_branches(body={
         'km_id': 'test-km',
@@ -135,7 +135,7 @@ def branch(dsw_sdk):
     }).json()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def package(dsw_sdk, branch):
     return dsw_sdk.api.put_branch_version(branch['uuid'], '1.0.0', body={
         'readme': 'Test readme',

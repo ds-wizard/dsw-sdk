@@ -25,33 +25,47 @@ with Betamax.configure() as config:
     config.cassette_library_dir = f'{ROOT_DIR}/tests/fixtures/cassettes'
 
 
-@pytest.fixture(scope='module')
-def dsw_sdk():
-    return DataStewardshipWizardSDK(
-        api_url='http://localhost:3000',
-        email='albert.einstein@example.com',
-        password='password',
-    )
-
-
 class NoAuthClient(SessionHttpClient):
     pass
 
 
-@pytest.fixture
-def betamax_dsw_sdk(betamax_session):
-    """
-    This is intended to fail if it tries to connect to the DSW API. If you
-    need to generate new cassettes, initialize SDK same as in `dsw_sdk`
-    fixture, with Betamax session.
-    """
-    client = NoAuthClient(
-        'http://localhost:3000',
-        None,
-        logging.root,
-        session=betamax_session,
+def pytest_addoption(parser):
+    parser.addoption(
+        '--recreate-cassettes',
+        action='store_true',
+        default=False,
+        help='If set, it will create new cassette for each HTTP request. Be'
+             'aware that DSW instance must be running on the given address.',
     )
-    return DataStewardshipWizardSDK(http_client=client)
+
+
+@pytest.fixture
+def dsw_sdk(request, betamax_session):
+    """
+    All functional tests and some of the integration tests do actual HTTP
+    requests. This fixture operates in 2 modes:
+
+        1) If you pass a `--recreate-cassettes` option to the pytest command
+        when running the tests, it will connect to the DSW API, do every HTTP
+        request and record it's response to a Betamax cassette.
+
+        2) If no option is passed, the SDK won't do any HTTP request at all.
+        Instead, it will read the responses from the cassettes. If there is no
+        matching cassette for a given request, the test will fail.
+    """
+    if request.config.option.recreate_cassettes:
+        return DataStewardshipWizardSDK(
+            api_url='http://localhost:3000',
+            email='albert.einstein@example.com',
+            password='password',
+            session=betamax_session,
+        )
+    else:
+        # If we are using cassettes (and thus not doing any HTTP requests),
+        # we must suppress the authentication as it doesn't use a session.
+        client = NoAuthClient('http://localhost:3000', None,
+                              logging.root, session=betamax_session)
+        return DataStewardshipWizardSDK(http_client=client)
 
 
 # ---------------------------------- Users -----------------------------------
