@@ -42,7 +42,7 @@ jobs:
         TOX_PARALLEL_NO_SPINNER: 1
       # Running tests in parallel with `-p` option
       run: |
-        tox -e unit_tests,integration_tests -p
+        tox -p
     - name: Upload test results
       uses: actions/upload-artifact@v2
       # Use always() to always run this step to publish test results when there are test failures
