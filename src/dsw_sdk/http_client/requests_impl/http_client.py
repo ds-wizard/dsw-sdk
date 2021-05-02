@@ -174,13 +174,14 @@ class SessionHttpClient(HttpClient):
                        timeout=self._default_timeout, **kwargs)
             res.raise_for_status()
         except requests.HTTPError as err:
+            resp = RequestsHttpResponse(err.response)
             if err.response.status_code == 400:
-                raise BadRequestError(err.response)
+                raise BadRequestError(resp)
             if err.response.status_code == 403:
-                raise ForbiddenError(err.response)
+                raise ForbiddenError(resp)
             if err.response.status_code == 404:
-                raise NotFoundError(err.response)
-            raise HttpError(err.response.status_code, err.response) from err
+                raise NotFoundError(resp)
+            raise HttpError(err.response.status_code, resp) from err
 
         self._logger.info(f'Request finished. Took about '
                           f'{time.time() - start_time:.2f} seconds.')

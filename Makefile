@@ -49,7 +49,11 @@ record_test_cassettes:
 # ------------------------------- Packaging ----------------------------------
 
 build:
+	rm -rf build dist
 	python -m build
+
+release:
+	twine upload dist/*
 
 
 .PHONY: docs pylint mypy flake8 metrics tests unit_tests integration_tests functional_tests build
