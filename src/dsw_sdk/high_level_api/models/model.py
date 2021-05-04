@@ -164,14 +164,17 @@ class Model(AttributesMixin):
     .. code-block:: python
 
         # 1
-        model = Model(dsw_sdk, __update_attrs={'uuid': '123', ...})
+        >>> model = Model(None, __update_attrs={'uuid': '123'})
+        >>> model.uuid
+        '123'
 
         # 2
-        model = Model(dsw_sdk)
-        model._update_attrs(uuid='123', ...)
+        >>> model = Model(None)
+        >>> model._update_attrs(uuid='123')
+        >>> model.uuid
+        '123'
 
     In either case, the model will be set with correct state.
-
     """
     uuid: str = StringAttribute(read_only=True)
 

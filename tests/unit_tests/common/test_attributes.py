@@ -233,9 +233,8 @@ def test_set_attribute(test_class, mocked_type):
     assert test_class._attrs['some_attr'] is True
 
 
-@pytest.mark.parametrize('failing_method', ['validate', 'convert'])
-def test_set_attribute_fail(test_class, mocked_type, failing_method):
-    getattr(mocked_type, failing_method).side_effect = ValueError
+def test_set_attribute_fail(test_class, mocked_type):
+    mocked_type.validate.side_effect = ValueError
     with pytest.raises(InvalidValueError) as e:
         test_class.some_attr = True
     assert e.match(e.value.msg.format(True, 'some_attr', mocked_type))
