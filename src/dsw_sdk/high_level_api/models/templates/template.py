@@ -61,7 +61,8 @@ class Template(Model):
     files = ListOfModelsAttribute(TemplateFile, default=[])
 
     def _attr_to_str(self, name: str, value: Any) -> str:
-        if name == 'readme' and len(value) > 50:
+        # Readme is usually quite long, so we display only the beginning
+        if name == 'readme':
             return truncate_long_string(value, 50)
         return super()._attr_to_str(name, value)
 

@@ -41,3 +41,4 @@ def test_to_snake_case(value, expected):
 
 def test_truncate_long_string():
     assert truncate_long_string('long text', 3) == '"lon..." (truncated)'
+    assert truncate_long_string('short', 5) == 'short'

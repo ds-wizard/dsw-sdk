@@ -1,3 +1,7 @@
+"""
+Module containing all the data types used with ``~common.Attribute`` classes.
+"""
+
 import json
 import re
 from datetime import datetime
@@ -18,27 +22,76 @@ T = TypeVar('T')
 
 
 class Type:
+    """
+    The most general type, parent for all specific types.
+    """
     _type: TypingType
 
+    def __repr__(self):
+        return str(self)
+
     def __str__(self):
+        # This is how the type will be displayed to the users in
+        # error messages. Usually we want to display corresponding
+        # builtin type or type from the typing module.
         return str(self._type.__name__)
 
     def _from_string(self, value: str) -> Any:
+        """
+        Used for converting from string value.
+
+        :param value: string value to be converted to ``self._type`` type
+
+        :return: possibly converted value
+        """
         return value
 
     def validate(self, value: Any):
+        """
+        Validates if ``value`` is of correct data type.
+
+        :param value: value to be validated
+
+        :raises: :class:`ValueError` if validation fails
+        """
         if not type(value) == self._type:   # pylint: disable=C0123
             raise ValueError
 
     def convert(self, value: Any) -> Any:
+        """
+        Tries to convert ``value`` to ``self._type`` data type.
+
+        :param value: value to be converted
+
+        :return: possibly converted value, but it might also
+                 be just the original value
+        """
         if isinstance(value, str):
             return self._from_string(value)
         return value
 
     def to_json(self, value: Any) -> Any:
+        """
+        Converts the ``value`` to JSON.
+
+        Be aware, that the result is not a string, but is instead
+        represented with built-in Python types.
+
+        :param value: value to be converted
+
+        :return: JSON representation of the ``value``
+        """
         return value
 
     def value_repr(self, value: Any) -> str:
+        """
+        Returns the string representation of the ``value`` for
+        the ``self._type`` data type.
+
+        :param value: value to be represented as a string
+
+        :return: string representing ``value`` for this particular data type
+        """
         return str(value)
 
 
@@ -297,6 +350,29 @@ class DateTimeType(Type):
 
 
 class ObjectType(Type):
+    """
+    Type representing some custom, user-defined class.
+    It is assumed that objects of this class can be fully instantiated
+    with a dict containing all the needed data.
+
+    Example:
+
+    .. code-block:: python
+
+        >>> class Foo:
+        ...     def __init__(self, a, b):
+        ...         self.a = a
+        ...         self.b = b
+        ...
+        ...     def __repr__(self):
+        ...         return f'<Foo a={self.a}, b={self.b} />'
+
+        >>> type_ = ObjectType(Foo)
+        >>> type_.convert({'a': 123, 'b': 'bar'})
+        <Foo a=123, b=bar />
+
+    """
+
     def __init__(self, class_: TypingType[T]):
         self._type = class_
 
@@ -321,6 +397,53 @@ class ObjectType(Type):
 
 
 class MappingType(Type):
+    """
+    Type representing some kind of mapping. It is used to determine the
+    correct type of the object at runtime, depending on the specified
+    field.
+
+    Example:
+
+    .. code-block:: python
+
+        >>> class Foo:
+        ...     def __init__(self, a, type):
+        ...         self.a = a
+        ...         self.type = type
+        ...
+        ...     def __repr__(self):
+        ...         return f'<Foo a={self.a} />'
+
+        >>> class Bar:
+        ...     def __init__(self, a, b, c, type):
+        ...         self.abc = f'{a}{b}{c}'
+        ...         self.type = type
+        ...
+        ...     def __repr__(self):
+        ...         return f'<Bar abc={self.abc} />'
+
+        >>> type_ = MappingType('type', {
+        ...     'foo': ObjectType(Foo),
+        ...     'bar': ObjectType(Bar),
+        ... })
+
+        >>> type_.convert({'type': 'foo', 'a': 123})
+        <Foo a=123 />
+
+        >>> type_.convert({'type': 'bar', 'a': 'a', 'b': 'b', 'c': 42})
+        <Bar abc=ab42 />
+
+        >>> foo = Foo(a=123, type='foo')
+        >>> type_.validate(foo)
+
+        >>> foo = Foo(a=123, type='bar')
+        >>> type_.validate(foo)
+        Traceback (most recent call last):
+        ...
+        ValueError
+
+    """
+
     def __init__(self,  mapping_key: str, mapping: Dict[str, ObjectType]):
         self._mapping_key = mapping_key
         self._mapping = mapping

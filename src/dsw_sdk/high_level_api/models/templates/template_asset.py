@@ -27,7 +27,7 @@ class TemplateAsset(Model):
     template_id = StringAttribute(immutable=True)
 
     def _attr_to_str(self, name: str, value: Any) -> str:
-        if name == 'content' and len(value) > 50:
+        if name == 'content':
             return truncate_long_string(value, 50)
         return super()._attr_to_str(name, value)
 

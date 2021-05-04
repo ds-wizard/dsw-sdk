@@ -1,6 +1,6 @@
 """
 Module containing the base Model class along with it's utility classes.
-Also defining two new attributes, specific for the Model subclasses only.
+Also defining two attributes, specific for the Model subclasses only.
 """
 from __future__ import annotations
 

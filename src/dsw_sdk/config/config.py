@@ -56,28 +56,37 @@ class ComponentConfig(Mapping, AttributesMixin):
 
     .. code-block:: python
 
-        conf = ComponentConfig()
+        >>> class Conf(ComponentConfig):
+        ...     some_value = StringAttribute()
+
+        >>> conf = Conf()
+        >>> conf.some_value = 'foo'
 
         # Check if the value is set
-        'some_value' in conf
+        >>> 'some_value' in conf
+        True
 
         # Get the item
-        conf.some_value
-        conf['some_value']
+        >>> conf.some_value
+        'foo'
+        >>> conf['some_value']
+        'foo'
 
         # Get number of configured values
-        len(conf)
+        >>> len(conf)
+        1
 
         # Iterate over the config as dict
-        for value in conf.values(): ...
-        for key in conf.keys(): ...
-        for key, value in conf.items(): ...
+        >>> for value in conf.values(): pass
+        >>> for key in conf.keys(): pass
+        >>> for key, value in conf.items(): pass
 
         # Deconstruct the config to pass it as kwargs
-        def foo(**kwargs):
-            ...
+        >>> def foo(**kwargs):
+        ...     return kwargs['some_value']
 
-        foo(**conf)
+        >>> foo(**conf)
+        'foo'
     """
     def __contains__(self, item):
         return self.attrs().__contains__(item)
