@@ -110,14 +110,8 @@ class NoneType(Type):
     _type = type(None)
 
     def _from_string(self, value: str) -> None:  # pylint: disable=R1711
-        if value.lower() not in ('none', 'null'):
-            raise ValueError
-        return None
-
-    def convert(self, value: Any) -> Any:
-        value = super().convert(value)
-        if value is not None:
-            raise ValueError
+        if value.lower() in ('none', 'null'):
+            return None
         return value
 
 
@@ -125,15 +119,8 @@ class BoolType(Type):
     _type = bool
 
     def _from_string(self, value: str) -> bool:
-        value = value.lower()
-        if value not in ('true', 'false'):
-            raise ValueError
-        return value.lower() == 'true'
-
-    def convert(self, value: Any) -> Any:
-        value = super().convert(value)
-        if not isinstance(value, bool):
-            raise ValueError
+        if value.lower() in ('true', 'false'):
+            return value.lower() == 'true'
         return value
 
 
@@ -151,18 +138,24 @@ class IntegerType(Type):
     _type = int
 
     def convert(self, value: Any) -> int:
-        # Converting to string first in order
-        # not to convert bool or float values
-        return int(str(value))
+        try:
+            # Converting to string first in order
+            # not to convert bool or float values
+            return int(str(value))
+        except ValueError:
+            return value
 
 
 class FloatType(Type):
     _type = float
 
     def convert(self, value: Any) -> float:
-        # Converting to string first in order not
-        # to convert bool or integer values
-        return float(str(value))
+        try:
+            # Converting to string first in order
+            # not to convert bool values
+            return float(str(value))
+        except ValueError:
+            return value
 
 
 class UnionType(Type):
@@ -178,40 +171,41 @@ class UnionType(Type):
                 types.append(str(type_))
         return f'Union[{", ".join(types)}]'
 
-    def validate(self, value: Any):
+    def _iter_over_types(self, value, callback):
         for type_ in self._of_types:
             try:
-                type_.validate(value)
-                return
+                return callback(type_, value)
             except ValueError:
                 pass
         raise ValueError
+
+    def validate(self, value: Any):
+        self._iter_over_types(value, lambda type_, val: type_.validate(val))
 
     def convert(self, value: Any) -> Any:
-        for type_ in self._of_types:
-            try:
-                return type_.convert(value)
-            except ValueError:
-                pass
-        raise ValueError
+        def callback(type_, val):
+            converted = type_.convert(val)
+            type_.validate(converted)
+            return converted
+
+        try:
+            return self._iter_over_types(value, callback)
+        except ValueError:
+            return value
 
     def to_json(self, value: Any) -> Any:
-        for type_ in self._of_types:
-            try:
-                type_.validate(value)
-                return type_.to_json(value)
-            except ValueError:
-                pass
-        raise ValueError
+        def callback(type_, val):
+            type_.validate(val)
+            return type_.to_json(val)
+
+        return self._iter_over_types(value, callback)
 
     def value_repr(self, value: Any) -> str:
-        for type_ in self._of_types:
-            try:
-                type_.validate(value)
-                return type_.value_repr(value)
-            except ValueError:
-                pass
-        raise ValueError
+        def callback(type_, val):
+            type_.validate(val)
+            return type_.value_repr(val)
+
+        return self._iter_over_types(value, callback)
 
 
 class TupleType(Type):
@@ -234,17 +228,28 @@ class TupleType(Type):
 
     def _from_string(self, value: str) -> List[str]:
         values = value.replace(' ', '').lstrip('(').rstrip(')').split(',')
-        if self._of_types and len(values) != len(self._of_types):
-            raise ValueError
+        if values == ['']:
+            return ()
         return values
 
     def convert(self, value: Any) -> tuple:
-        value = super().convert(value)
-        if isinstance(value, Iterable):
-            return tuple(
-                type_.convert(val) for val, type_ in zip(value, self._of_types)
-            )
-        raise ValueError
+        converted = super().convert(value)
+        if isinstance(converted, Iterable):
+            if len(self._of_types) != len(converted):
+                return value
+            res = []
+            for val, type_ in zip(converted, self._of_types):
+                converted_val = type_.convert(val)
+                try:
+                    # Checking that each item of the
+                    # tuple is converted correctly
+                    type_.validate(converted_val)
+                except ValueError:
+                    # Otherwise we must return the original value
+                    return value
+                res.append(converted_val)
+            return tuple(res)
+        return value
 
     def to_json(self, value: tuple) -> list:
         return [t.to_json(v) for v, t in zip(value, self._of_types)]
@@ -276,10 +281,18 @@ class ListType(Type):
         return values
 
     def convert(self, value: Any) -> list:
-        value = super().convert(value)
-        if isinstance(value, Iterable):
-            return [self._of_type.convert(val) for val in value]
-        raise ValueError
+        converted_value = super().convert(value)
+        if isinstance(converted_value, Iterable):
+            res = []
+            for val in converted_value:
+                converted_val = self._of_type.convert(val)
+                try:
+                    self._of_type.validate(converted_val)
+                except ValueError:
+                    return value
+                res.append(converted_val)
+            return res
+        return value
 
     def to_json(self, value: list) -> list:
         return [self._of_type.to_json(val) for val in value]
@@ -310,16 +323,23 @@ class DictType(Type):
         try:
             return json.loads(value.replace("'", '"'))
         except json.JSONDecodeError:
-            raise ValueError
+            return value
 
     def convert(self, value: Any) -> Any:
-        value = super().convert(value)
-        if isinstance(value, dict):
-            return {
-                self._keys.convert(k): self._values.convert(v)
-                for k, v in value.items()
-            }
-        raise ValueError
+        converted_value = super().convert(value)
+        if isinstance(converted_value, dict):
+            res = {}
+            for k, v in converted_value.items():
+                converted_k = self._keys.convert(k)
+                converted_v = self._values.convert(v)
+                try:
+                    self._keys.validate(converted_k)
+                    self._values.validate(converted_v)
+                except ValueError:
+                    return value
+                res[converted_k] = converted_v
+            return res
+        return value
 
     def to_json(self, value: dict) -> dict:
         return {self._keys.to_json(k): self._values.to_json(v)
@@ -336,14 +356,11 @@ class DateTimeType(Type):
     _format = '%Y-%m-%dT%H:%M:%SZ'
 
     def _from_string(self, value: str) -> datetime:
-        value = re.sub(r'\..*Z', r'Z', value)
-        return datetime.strptime(value, self._format)
-
-    def convert(self, value: Any) -> Any:
-        value = super().convert(value)
-        if not isinstance(value, datetime):
-            raise ValueError
-        return value
+        modified_value = re.sub(r'\..*Z', r'Z', value)
+        try:
+            return datetime.strptime(modified_value, self._format)
+        except ValueError:
+            return value
 
     def to_json(self, value: datetime) -> str:
         return datetime.strftime(value, self._format)
@@ -383,11 +400,9 @@ class ObjectType(Type):
         raise NotImplementedError
 
     def convert(self, value: Any) -> T:
-        if isinstance(value, self._type):
-            return value
         if isinstance(value, dict):
             return self._type(**value)
-        raise ValueError
+        return value
 
     def to_json(self, value: T) -> Dict[str, Any]:
         return value.to_json()
@@ -457,9 +472,9 @@ class MappingType(Type):
             key = value.get(to_camel_case(self._mapping_key))
             type_ = self._mapping.get(key)
             if not type_:
-                raise ValueError
+                return value
             return type_.convert(value)
-        raise ValueError
+        raise value
 
     def validate(self, value: Any):
         key = getattr(value, self._mapping_key, None)
