@@ -36,7 +36,8 @@ class User(Model):
     sources: List[str] = ListAttribute(StringType(), read_only=True)
     updated_at: datetime = DateTimeAttribute(nullable=True, read_only=True)
 
-    questionnaires = ListOfModelsAttribute(Questionnaire, default=[], read_only=True)
+    questionnaires = ListOfModelsAttribute(Questionnaire, default=[],
+                                           read_only=True)
 
     def _create(self):
         dto = UserCreateDTO(**self.attrs())

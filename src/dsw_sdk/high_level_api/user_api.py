@@ -53,16 +53,18 @@ class UserAPI(API):
         For a given list of user UUIDs, loads all of their questionnaires and
         associated documents.
         """
-        user_questionnaires = {uuid: [] for uuid in user_uuids}
+        user_questionnaires: Dict[str, List[Questionnaire]] = {
+            uuid: [] for uuid in user_uuids
+        }
 
         questionnaires = self._sdk.questionnaires.get_questionnaires()
-        for q in questionnaires:
-            for perm in q.permissions:
+        for quest in questionnaires:
+            for perm in quest.permissions:
                 if (
                     perm.member.type == USER_MEMBER
                     and perm.member.uuid in user_uuids
                 ):
-                    user_questionnaires[perm.member.uuid].append(q)
+                    user_questionnaires[perm.member.uuid].append(quest)
 
         return user_questionnaires
 

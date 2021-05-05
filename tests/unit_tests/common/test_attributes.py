@@ -201,7 +201,7 @@ def test_attributes_mixin_update_attrs_init(mocked_type):
 
 
 def test_attribute_init(test_class):
-    assert get_descriptor(test_class)._name == 'some_attr'
+    assert get_descriptor(test_class).name == 'some_attr'
 
 
 @use_data(test_class_data={'attrs': {'some_attr': 1234}})

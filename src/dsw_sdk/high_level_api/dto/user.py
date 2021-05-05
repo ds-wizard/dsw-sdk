@@ -19,12 +19,12 @@ class UserSuggestion(AttributesMixin):
 
 
 class UserCreateDTO(AttributesMixin):
-    affiliation: str = StringAttribute(nullable=True)
-    email: str = StringAttribute()
-    first_name: str = StringAttribute()
-    last_name: str = StringAttribute()
-    password: str = StringAttribute()
-    role: str = StringAttribute(nullable=True)
+    affiliation: str = StringAttribute(nullable=True)  # type: ignore
+    email: str = StringAttribute()  # type: ignore
+    first_name: str = StringAttribute()  # type: ignore
+    last_name: str = StringAttribute()  # type: ignore
+    password: str = StringAttribute()  # type: ignore
+    role: str = StringAttribute(nullable=True)  # type: ignore
 
 
 class UserChangeDTO(AttributesMixin):

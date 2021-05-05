@@ -13,14 +13,17 @@ from typing import (
     Dict,
     Iterable,
     List,
+    Optional,
+    Sized,
     Type as TypingType,
     TypeVar,
+    Union,
 )
 
 from dsw_sdk.common.utils import to_camel_case
 
 
-T = TypeVar('T')
+T = TypeVar('T')  # pylint: disable=C0103
 
 
 class Type:
@@ -56,7 +59,10 @@ class Type:
 
         :raises: :exc:`ValueError` if validation fails
         """
-        if not type(value) == self._type:   # pylint: disable=C0123
+        # Not performing instance check (`isinstance`), but comparing types
+        # directly because we want subclasses to fail this check, e.g.
+        # `isinstance(True, int)` would pass but `type(True) == int` not
+        if not type(value) == self._type:  # pylint: disable=C0123
             raise ValueError
 
     def convert(self, value: Any) -> Any:
@@ -111,7 +117,7 @@ class AnyType(Type):
 class NoneType(Type):
     _type = type(None)
 
-    def _from_string(self, value: str) -> None:  # pylint: disable=R1711
+    def _from_string(self, value: str) -> Optional[str]:
         if value.lower() in ('none', 'null'):
             return None
         return value
@@ -120,7 +126,7 @@ class NoneType(Type):
 class BoolType(Type):
     _type = bool
 
-    def _from_string(self, value: str) -> bool:
+    def _from_string(self, value: str) -> Union[bool, str]:
         if value.lower() in ('true', 'false'):
             return value.lower() == 'true'
         return value
@@ -228,7 +234,7 @@ class TupleType(Type):
         for val, type_ in zip(value, self._of_types):
             type_.validate(val)
 
-    def _from_string(self, value: str) -> List[str]:
+    def _from_string(self, value: str) -> Union[tuple, List[str]]:
         values = value.replace(' ', '').lstrip('(').rstrip(')').split(',')
         if values == ['']:
             return ()
@@ -236,7 +242,7 @@ class TupleType(Type):
 
     def convert(self, value: Any) -> tuple:
         converted = super().convert(value)
-        if isinstance(converted, Iterable):
+        if isinstance(converted, Sized) and isinstance(converted, Iterable):
             if len(self._of_types) != len(converted):
                 return value
             res = []
@@ -257,7 +263,11 @@ class TupleType(Type):
         return [t.to_json(v) for v, t in zip(value, self._of_types)]
 
     def value_repr(self, value: tuple) -> str:
-        if any(isinstance(type_, (ObjectType, MappingType)) for type_ in self._of_types) and value:
+        if (
+            any(isinstance(type_, (ObjectType, MappingType))
+                for type_ in self._of_types)
+            and value
+        ):
             return f'(...) ({len(value)} items)'
         return str(value)
 
@@ -321,7 +331,7 @@ class DictType(Type):
             self._keys.validate(key)
             self._values.validate(val)
 
-    def _from_string(self, value: str) -> dict:
+    def _from_string(self, value: str) -> Union[dict, str]:
         try:
             return json.loads(value.replace("'", '"'))
         except json.JSONDecodeError:
@@ -331,15 +341,15 @@ class DictType(Type):
         converted_value = super().convert(value)
         if isinstance(converted_value, dict):
             res = {}
-            for k, v in converted_value.items():
-                converted_k = self._keys.convert(k)
-                converted_v = self._values.convert(v)
+            for key, val in converted_value.items():
+                converted_key = self._keys.convert(key)
+                converted_val = self._values.convert(val)
                 try:
-                    self._keys.validate(converted_k)
-                    self._values.validate(converted_v)
+                    self._keys.validate(converted_key)
+                    self._values.validate(converted_val)
                 except ValueError:
                     return value
-                res[converted_k] = converted_v
+                res[converted_key] = converted_val
             return res
         return value
 
@@ -357,7 +367,7 @@ class DateTimeType(Type):
     _type = datetime
     _format = '%Y-%m-%dT%H:%M:%SZ'
 
-    def _from_string(self, value: str) -> datetime:
+    def _from_string(self, value: str) -> Union[datetime, str]:
         modified_value = re.sub(r'\..*Z', r'Z', value)
         try:
             return datetime.strptime(modified_value, self._format)
@@ -407,7 +417,7 @@ class ObjectType(Type):
         return value
 
     def to_json(self, value: T) -> Dict[str, Any]:
-        return value.to_json()
+        return value.to_json()  # type: ignore[attr-defined]
 
     def value_repr(self, value: T) -> str:
         return f'<{self._type.__name__} ...>'
@@ -461,7 +471,7 @@ class MappingType(Type):
 
     """
 
-    def __init__(self,  mapping_key: str, mapping: Dict[str, ObjectType]):
+    def __init__(self, mapping_key: str, mapping: Dict[str, ObjectType]):
         self._mapping_key = mapping_key
         self._mapping = mapping
 
@@ -471,7 +481,7 @@ class MappingType(Type):
 
     def convert(self, value: Any) -> Any:
         if isinstance(value, dict):
-            key = value.get(to_camel_case(self._mapping_key))
+            key = value.get(to_camel_case(self._mapping_key), '')
             type_ = self._mapping.get(key)
             if not type_:
                 return value
@@ -491,6 +501,8 @@ class MappingType(Type):
     def value_repr(self, value: Any) -> str:
         key = getattr(value, self._mapping_key, None)
         type_ = self._mapping.get(key)
+        if not type_:
+            raise ValueError
         return type_.value_repr(value)
 
 

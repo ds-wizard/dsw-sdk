@@ -2,16 +2,14 @@
 Common classes for high-level APIs.
 """
 
-from typing import Any, Callable, Dict, List, Type, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Type
 
+from dsw_sdk.high_level_api.models.model import Model
 from dsw_sdk.http_client.interface import (
     BadRequestError,
     HttpResponse,
     NotFoundError,
 )
-
-
-T = TypeVar('T')
 
 
 class NotInRegistryError(Exception):
@@ -31,22 +29,22 @@ class API:
     Every subclass should define the :attr:`model_class` class attribute (it's
     the model class that the API is working with, e.g. :class:`~models.User`).
     """
-    model_class: Type[T]
+    model_class: Type[Model]
 
     def __init__(self, sdk):
         self._sdk = sdk
         self._last_response: HttpResponse = None
 
-    def _create_loaded(self, data: Dict[str, Any]) -> T:
+    def _create_loaded(self, data: Dict[str, Any]) -> Model:
         return self.model_class(self._sdk, __update_attrs=data)
 
     def _get_one(self, func: Callable[[str], HttpResponse],
-                 uuid: str) -> T:
+                 uuid: str) -> Model:
         data = func(uuid).json()
         return self._create_loaded(data)
 
     def _get_many(self, func: Callable[[Dict[str, Any]], HttpResponse],
-                  data_key: str, **query_params) -> List[T]:
+                  data_key: str, **query_params) -> List[Model]:
         self._last_response = func(query_params)
         response = self._last_response.json()
         data: List[Dict[str, Any]] = response['_embedded'][data_key]
@@ -67,7 +65,7 @@ class API:
 
         return [self._create_loaded(d) for d in data]
 
-    def _create_new(self, **kwargs) -> T:
+    def _create_new(self, **kwargs) -> Model:
         instance = self.model_class(self._sdk, **kwargs)
         instance.save()
         return instance
@@ -97,10 +95,10 @@ class RegistryAPIMixin:
         for id_ in ids:
             try:
                 func(id_)
-            except BadRequestError as e:
-                if "wasn't found in Registry" in e.msg:
+            except BadRequestError as err:
+                if "wasn't found in Registry" in err.msg:
                     not_found_ids.append(id_)
-                elif 'already exists' in e.msg:
+                elif 'already exists' in err.msg:
                     pass
                 else:
                     raise
@@ -109,10 +107,10 @@ class RegistryAPIMixin:
 
     @staticmethod
     def _update(
-        get_one: Callable[[str], HttpResponse],
-        get_many: Callable[[], HttpResponse],
+        get_one: Callable[[str], Model],
+        get_many: Callable[[], List[Model]],
         pull: Callable[[List[str]], None],
-        ids: List[str],
+        ids: Optional[List[str]],
     ):
         if ids is None:
             entities = get_many()

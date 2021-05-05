@@ -4,7 +4,7 @@ Module containing a synchronous implementation of the
 interface via the popular `requests` library.
 """
 
-from __future__ import annotations  # type: ignore[attr-defined]
+from __future__ import annotations
 
 import logging
 import time
@@ -96,6 +96,7 @@ class SessionHttpClient(HttpClient):
         :param auth_class: class responsible for the authentication process
         :param logger: logger object
         """
+        super().__init__(base_url, auth_class, logger, **kwargs)
         self._base_url = base_url
         self._logger = logger
         self._default_timeout = kwargs.get('default_timeout')
@@ -111,7 +112,7 @@ class SessionHttpClient(HttpClient):
         self,
         *args,
         **kwargs
-    ) -> (Tuple[Any, ...], Dict[str, Any]):
+    ) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         """
         This method can be overridden by users to provide custom logic before
         sending the request.

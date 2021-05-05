@@ -38,5 +38,3 @@ class Document(Model):
 
     def _delete(self):
         raise NotImplementedError('Cannot delete documents')
-
-

@@ -12,7 +12,7 @@ from dsw_sdk.high_level_api.models.questionnaire import Questionnaire
 class QuestionnaireAPI(API):
     """
     API for the Questionnaire entities.
-    
+
     For now, there are just two methods for getting one or many questionnaires
     (as others were not yet required, but might be implemented in the future).
 

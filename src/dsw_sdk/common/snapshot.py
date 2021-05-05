@@ -79,7 +79,7 @@ def snapshots_diff(old: Snapshot, new: Snapshot) -> SnapshotDiff:
     """
     Compares two snapshots (assuming the first one is older and the
     second one is newer), returning attributes in which they differ.
-    
+
     :param old: former state of the object
     :param new: newer (current) state of the object
 

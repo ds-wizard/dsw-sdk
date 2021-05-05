@@ -1,4 +1,7 @@
-from typing import Any
+# pylint: disable=E1133
+
+from datetime import datetime
+from typing import Any, List, Optional
 
 from dsw_sdk.common.attributes import (
     Alias,
@@ -37,28 +40,45 @@ UPDATE_VALIDATE_ERR = ('Invalid `{}` attribute: `template_id` of a {} must be '
 
 
 class Template(Model):
-    allowed_packages = ListAttribute(ObjectType(TemplateAllowedPackage))
-    created_at = DateTimeAttribute(read_only=True)
-    description = StringAttribute()
-    formats = ListAttribute(ObjectType(TemplateFormat))
-    id = Alias('uuid')
-    license = StringAttribute()
-    metamodel_version = IntegerAttribute()
-    name = StringAttribute()
-    organization = ObjectAttribute(OrganizationSimple, nullable=True, read_only=True)
-    organization_id = StringAttribute()
-    readme = StringAttribute()
-    recommended_package_id = StringAttribute(nullable=True)
-    registry_link = StringAttribute(nullable=True, read_only=True)
-    remote_latest_version = StringAttribute(nullable=True, read_only=True)
-    state = StringAttribute(choices=TEMPLATE_STATES, read_only=True)
-    template_id = StringAttribute()
-    usable_packages = ListAttribute(ObjectType(PackageSimpleDTO), read_only=True)
-    version = StringAttribute()
-    versions = ListAttribute(StringType(), read_only=True)
+    allowed_packages: List[TemplateAllowedPackage] = ListAttribute(
+        ObjectType(TemplateAllowedPackage),
+    )
+    created_at: datetime = DateTimeAttribute(read_only=True)
+    description: str = StringAttribute()
+    formats: List[TemplateFormat] = ListAttribute(ObjectType(TemplateFormat))
+    id: str = Alias('uuid')
+    license: str = StringAttribute()
+    metamodel_version: int = IntegerAttribute()
+    name: str = StringAttribute()
+    organization: Optional[OrganizationSimple] = ObjectAttribute(
+        OrganizationSimple,
+        nullable=True,
+        read_only=True,
+    )
+    organization_id: str = StringAttribute()
+    readme: str = StringAttribute()
+    recommended_package_id: Optional[str] = StringAttribute(nullable=True)
+    registry_link: Optional[str] = StringAttribute(
+        nullable=True,
+        read_only=True,
+    )
+    remote_latest_version: Optional[str] = StringAttribute(
+        nullable=True,
+        read_only=True,
+    )
+    state: str = StringAttribute(choices=TEMPLATE_STATES, read_only=True)
+    template_id: str = StringAttribute()
+    usable_packages: List[PackageSimpleDTO] = ListAttribute(
+        ObjectType(PackageSimpleDTO),
+        read_only=True,
+    )
+    version: str = StringAttribute()
+    versions: List[str] = ListAttribute(StringType(), read_only=True)
 
-    assets = ListOfModelsAttribute(TemplateAsset, default=[])
-    files = ListOfModelsAttribute(TemplateFile, default=[])
+    assets: List[TemplateAsset] = ListOfModelsAttribute(TemplateAsset,
+                                                        default=[])
+    files: List[TemplateFile] = ListOfModelsAttribute(TemplateFile,
+                                                      default=[])
 
     def _attr_to_str(self, name: str, value: Any) -> str:
         # Readme is usually quite long, so we display only the beginning
@@ -76,10 +96,16 @@ class Template(Model):
 
     def _update_validate(self):
         for file in self.files:
-            if file.template_id is not None and file.template_id != self.uuid:
+            if (
+                file.template_id is not None
+                and file.template_id != self.uuid
+            ):
                 raise ValueError(UPDATE_VALIDATE_ERR.format('files', 'file'))
         for asset in self.assets:
-            if asset.template_id is not None and asset.template_id != self.uuid:
+            if (
+                asset.template_id is not None
+                and asset.template_id != self.uuid
+            ):
                 raise ValueError(UPDATE_VALIDATE_ERR.format('assets', 'asset'))
 
     def _save_template_files(self, diff: SnapshotDiff = SnapshotDiff()):

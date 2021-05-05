@@ -1,15 +1,15 @@
+# type: ignore[override]
 """
 Module containing the base Model class along with it's utility classes.
 Also defining two attributes, specific for the Model subclasses only.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, NoReturn, Sequence, Type
+from typing import Any, Dict, NoReturn, Type
 
 from dsw_sdk.common.attributes import (
     AttributesMixin,
     ListAttribute,
-    NOT_SET,
     ObjectAttribute,
     StringAttribute,
 )
@@ -306,11 +306,8 @@ class ListOfModelsAttribute(ListAttribute):
     Attribute containing a list of another :class:`Model` instances.
     """
 
-    def __init__(self, model_class: Type[Model], default: list = NOT_SET,
-                 nullable: bool = False, read_only: bool = False,
-                 immutable: bool = False, choices: Sequence[Model] = None):
-        super().__init__(ObjectType(model_class), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, model_class: Type[Model], **kwargs):
+        super().__init__(ObjectType(model_class), **kwargs)
 
     def __set__(self, instance: Model, value: Any):
         """

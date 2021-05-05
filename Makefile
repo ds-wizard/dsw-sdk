@@ -15,18 +15,15 @@ docs:
 # --------------------------------- Metrics ----------------------------------
 
 pylint:
-	pylint "${FILE}"
+	pylint --exit-zero "${FILE}"
 
 mypy:
 	mypy "${FILE}"
 
 flake8:
-	flake8 "${FILE}"
+	flake8 --statistics --show-source --exit-zero "${FILE}"
 
-metrics:
-	-pylint "${FILE}"
-	-mypy "${FILE}"
-	-flake8 "${FILE}"
+metrics: pylint mypy flake8
 
 # --------------------------------- Tests ------------------------------------
 

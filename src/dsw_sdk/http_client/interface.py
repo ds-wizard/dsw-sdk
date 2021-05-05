@@ -42,6 +42,7 @@ class HttpError(Exception):
         self.status_code = status_code
         self.msg = self._get_message(response)
         self.response = response
+        super().__init__(self.msg)
 
     def __str__(self):
         return f'[{self.status_code}] {self.msg} ({self.response.path})'
@@ -125,6 +126,9 @@ class HttpClient:
     this interface and pass an instance of your client to the SDK when the
     initialization goes on.
     """
+
+    def __init__(self, *args, **kwargs):
+        pass
 
     def head(self, path: str, **kwargs) -> HttpResponse:
         """

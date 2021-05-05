@@ -29,7 +29,6 @@ containing all the methods to ease the usage of it's subclasses.
 from __future__ import annotations
 
 import inspect
-from datetime import datetime
 from typing import (
     Any,
     Dict,
@@ -224,7 +223,7 @@ class AttributesMixin:
         Just comparing all the attributes (including
         default values) set on both instances.
         """
-        if type(self) != type(other):
+        if self.__class__ != other.__class__:
             return False
         my_attrs = [v for k, v in self.attrs().items()
                     if k not in self._eq_ignore]
@@ -267,7 +266,7 @@ class AttributesMixin:
             for class_ in reversed(classes):
                 values = class_.__dict__.values()
                 attrs = filter(lambda v: isinstance(v, Attribute), values)
-                self._attr_descriptors.update({attr._name: attr
+                self._attr_descriptors.update({attr.name: attr
                                                for attr in attrs})
         return self._attr_descriptors
 
@@ -372,41 +371,44 @@ class Attribute:
     can't be really used separately.
     """
 
-    def __init__(self, type_: Type, default: Any = NOT_SET,
-                 nullable: bool = False, read_only: bool = False,
-                 immutable: bool = False, choices: Sequence[Any] = None):
+    def __init__(self, type_: Type, **kwargs):
         """
         :param `type_`: type of the attribute
-        :param default: default value for the attribute
-        :param nullable: whether ``None`` should be a valid value
-        :param read_only: if set to ``True``, assigning to this attribute will
-            raise an exception
-        :param immutable: if set to ``True``, it's possible to assign a value
-            to this attribute only once; any other try will raise an exception
-        :param choices: sequence defining range of possible values
+
+        :Keyword arguments:
+            * **default** (`Any`): default value for the attribute
+            * **nullable** (`bool`): whether ``None`` should be a valid value
+            * **read_only** (`bool`): if set to ``True``, assigning to this
+              attribute will raise an exception
+            * **immutable** (`bool`): if set to ``True``, it's possible to
+              assign a value to this attribute only once; any other try will
+              raise an exception
+            * **choices** (`Sequence[Any]`): sequence defining range of
+              possible values
         """
-        if nullable:
+        default = kwargs.get('default', NOT_SET)
+        if kwargs.get('nullable'):
             type_ = UnionType(NoneType(), type_)
             default = None if default == NOT_SET else default
         self._type = type_
         self._default = default
-        self._read_only = read_only
-        self._immutable = immutable
-        self._choices = choices
+        self._read_only = kwargs.get('read_only', False)
+        self._immutable = kwargs.get('immutable', False)
+        self._choices = kwargs.get('choices')
 
     def __set_name__(self, owner: TypingType, name: str):
-        self._name = name  # pylint: disable=W0201
+        self.name = name  # pylint: disable=W0201
 
     def __get__(self, instance: AttributesMixin, owner: TypingType) -> Any:
         """
         Returns the attribute's value, if set. If not, check for a
         default value, otherwise raise an exception.
         """
-        value = instance._attrs.get(self._name, self._default)
+        value = instance._attrs.get(self.name, self._default)
         # Using `NOT_SET` sentinel and not e.g. `None`, because even
         # `None` can be used as valid default value.
         if value == NOT_SET:
-            raise AttributeNotSetError(self._name)
+            raise AttributeNotSetError(self.name)
         return value
 
     def __set__(self, instance: AttributesMixin, value: Any):
@@ -415,26 +417,26 @@ class Attribute:
         assigning value to an attribute.
         """
         if instance._with_validations and self._read_only:
-            raise ReadOnlyAccessError(self._name)
+            raise ReadOnlyAccessError(self.name)
 
         if (
             instance._with_validations
             and self._immutable
-            and self._name in instance._attrs
-            and instance._attrs[self._name] != value
+            and self.name in instance._attrs
+            and instance._attrs[self.name] != value
         ):
-            raise ModifyImmutableError(self._name)
+            raise ModifyImmutableError(self.name)
 
         value = self._type.convert(value)
         try:
             self._type.validate(value)
         except ValueError:
-            raise InvalidValueError(value, self._name, self._type)
+            raise InvalidValueError(value, self.name, self._type)
 
         if self._choices is not None and value not in self._choices:
-            raise NotInChoicesError(value, self._name, self._choices)
+            raise NotInChoicesError(value, self.name, self._choices)
 
-        instance._attrs[self._name] = value
+        instance._attrs[self.name] = value
 
     def to_json(self, value: Any) -> Any:
         """
@@ -462,70 +464,43 @@ class Attribute:
 
 
 class StringAttribute(Attribute):
-    def __init__(self, default: str = NOT_SET, nullable: bool = False,
-                 read_only: bool = False, immutable: bool = False,
-                 choices: Sequence[str] = None):
-        super().__init__(StringType(), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, **kwargs):
+        super().__init__(StringType(), **kwargs)
 
 
 class IntegerAttribute(Attribute):
-    def __init__(self, default: int = NOT_SET, nullable: bool = False,
-                 read_only: bool = False, immutable: bool = False,
-                 choices: Sequence[int] = None):
-        super().__init__(IntegerType(), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, **kwargs):
+        super().__init__(IntegerType(), **kwargs)
 
 
 class FloatAttribute(Attribute):
-    def __init__(self, default: float = NOT_SET, nullable: bool = False,
-                 read_only: bool = False, immutable: bool = False,
-                 choices: Sequence[float] = None):
-        super().__init__(FloatType(), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, **kwargs):
+        super().__init__(FloatType(), **kwargs)
 
 
 class BoolAttribute(Attribute):
-    def __init__(self, default: bool = NOT_SET, nullable: bool = False,
-                 read_only: bool = False, immutable: bool = False,
-                 choices: Sequence[bool] = None):
-        super().__init__(BoolType(), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, **kwargs):
+        super().__init__(BoolType(), **kwargs)
 
 
 class ListAttribute(Attribute):
-    def __init__(self, type_: Type, default: list = NOT_SET,
-                 nullable: bool = False, read_only: bool = False,
-                 immutable: bool = False, choices: Sequence[list] = None):
-        super().__init__(ListType(type_), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, type_: Type, **kwargs):
+        super().__init__(ListType(type_), **kwargs)
 
 
 class DictAttribute(Attribute):
-    def __init__(self, key_type: Type, value_type: Type,
-                 default: dict = NOT_SET, nullable: bool = False,
-                 read_only: bool = False, immutable: bool = False,
-                 choices: Sequence[dict] = None):
-        super().__init__(DictType(key_type, value_type), default,
-                         nullable, read_only, immutable, choices)
+    def __init__(self, key_type: Type, value_type: Type, **kwargs):
+        super().__init__(DictType(key_type, value_type), **kwargs)
 
 
 class DateTimeAttribute(Attribute):
-    def __init__(self, default: datetime = NOT_SET, nullable: bool = False,
-                 read_only: bool = False, immutable: bool = False,
-                 choices: Sequence[datetime] = None):
-        super().__init__(DateTimeType(), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, **kwargs):
+        super().__init__(DateTimeType(), **kwargs)
 
 
 class ObjectAttribute(Attribute):
-    def __init__(self, type_: TypingType[AttributesMixin],
-                 default: AttributesMixin = NOT_SET,
-                 nullable: bool = False, read_only: bool = False,
-                 immutable: bool = False,
-                 choices: Sequence[AttributesMixin] = None):
-        super().__init__(ObjectType(type_), default, nullable,
-                         read_only, immutable, choices)
+    def __init__(self, type_: TypingType[AttributesMixin], **kwargs):
+        super().__init__(ObjectType(type_), **kwargs)
 
     def __set__(self, instance: AttributesMixin, value: Any):
         if isinstance(value, dict) and ('uuid' in value or 'id' in value):

@@ -1,3 +1,4 @@
+# pylint: disable=R0901
 """
 Module defining configuration of the whole library and implementing
 the means of collecting the user config.
@@ -65,7 +66,7 @@ class ComponentConfig(Mapping, AttributesMixin):
         ...
         dsw_sdk.common.attributes.AttributeNotSetError: ...
         >>> conf.some_value = 'foo'
-        
+
         # Check if the value is set
         >>> 'some_value' in conf
         True
@@ -109,13 +110,13 @@ class HttpClientConfig(ComponentConfig):
     """
     Config for the HTTP client.
     """
-    api_url: str = StringAttribute()  # type: ignore
-    email: str = StringAttribute()  # type: ignore
-    password: str = StringAttribute()  # type: ignore
-    enable_ssl: bool = BoolAttribute(default=True)  # type: ignore
-    auth_endpoint: str = StringAttribute(default='/tokens')  # type: ignore
-    headers: Headers = Attribute(HEADERS_TYPE, default={})  # type: ignore
-    default_timeout: Timeout = Attribute(TIMEOUT_TYPE,  # type: ignore
+    api_url: str = StringAttribute()
+    email: str = StringAttribute()
+    password: str = StringAttribute()
+    enable_ssl: bool = BoolAttribute(default=True)
+    auth_endpoint: str = StringAttribute(default='/tokens')
+    headers: Headers = Attribute(HEADERS_TYPE, default={})
+    default_timeout: Timeout = Attribute(TIMEOUT_TYPE,
                                          default=(6.05, 27))
 
 
@@ -123,13 +124,13 @@ class LoggerConfig(ComponentConfig):
     """
     Config for the Logger.
     """
-    logger_name: str = StringAttribute(default='dsw_sdk')  # type: ignore
-    logger_level: str = Attribute(  # type: ignore
+    logger_name: str = StringAttribute(default='dsw_sdk')
+    logger_level: str = Attribute(
         UnionType(IntegerType(), StringType()),
         default=logging.WARNING,
         choices=LOG_LEVELS,
     )
-    logger_format: str = StringAttribute(  # type: ignore
+    logger_format: str = StringAttribute(
         default='[%(asctime)s] - %(name)s | %(levelname)s | %(message)s'
     )
 
@@ -193,10 +194,7 @@ class Config:
                 raise KeyError(
                     MISSING_CONFIG_KEY_ERR.format(conf_file, cls._FILE_SECTION)
                 )
-            return {
-                k: v
-                for k, v in file_config.get(cls._FILE_SECTION, {}).items()
-            }
+            return file_config.get(cls._FILE_SECTION, {})
 
     @classmethod
     def _init_env_config(cls) -> Dict[str, Any]:

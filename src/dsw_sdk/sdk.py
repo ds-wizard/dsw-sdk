@@ -27,10 +27,10 @@ from dsw_sdk.http_client.requests_impl.http_client import SessionHttpClient
 from dsw_sdk.low_level_api.api import LowLevelAPI
 
 
-HTTP_CLIENT = Union[HttpClient, Type[HttpClient]]
+HTTP_CLIENT = Union[HttpClient, Type[HttpClient]]  # pylint: disable=C0103
 
 
-class DataStewardshipWizardSDK:
+class DataStewardshipWizardSDK:  # pylint: disable=R0902
     """
     This class provides simple and concise way to communicate with the Data
     Stewardship Wizard API. It offers both low-level and object-oriented
@@ -195,7 +195,7 @@ class DataStewardshipWizardSDK:
         credentials = {'email': self._config.http_client.email,
                        'password': self._config.http_client.password}
 
-        return (http_client or SessionHttpClient)(
+        return (http_client or SessionHttpClient)(  # type: ignore[operator]
             self._config.http_client.api_url,
             JWTBearerAuth(BodyTokenRetrievalStrategy(auth_url, credentials)),
             self.logger,
