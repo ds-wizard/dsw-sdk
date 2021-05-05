@@ -13,12 +13,14 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../src'))
+sys.path.insert(0, os.path.abspath('../../src/dsw_sdk'))
 sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/http_client/'))
 sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/http_client/requests_impl'))
 sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/low_level_api'))
 sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/config'))
 sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/high_level_api'))
 sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/high_level_api/models'))
+sys.path.insert(0, os.path.abspath('../../src/dsw_sdk/common'))
 
 
 # -- Project information -----------------------------------------------------
@@ -52,11 +54,18 @@ autodoc_member_order = 'bysource'
 autodoc_typehints = 'description'
 autodoc_type_aliases = {
     'HttpResponse': 'interface.HttpResponse',
-    'HttpClient': 'interface.HttpClient',
+    'HttpClient': 'dsw_sdk.http_client.interface.HttpClient',
     'TokenRetrievalStrategy': 'auth.TokenRetrievalStrategy',
     'RequestsHttpResponse': 'http_client.RequestsHttpResponse',
     'Model': 'model.Model',
     'State': 'model.State',
+    'AppConfig': 'dsw_sdk.high_level_api.models.app_config.AppConfig',
+    'Document': 'dsw_sdk.high_level_api.models.document.Document',
+    'Questionnaire': 'dsw_sdk.high_level_api.models.questionnaire.Questionnaire',
+    'Template': 'dsw_sdk.high_level_api.models.templates.template.Template',
+    'User': 'dsw_sdk.high_level_api.models.user.User',
+    'Snapshot': 'snapshot.Snapshot',
+    'Type': 'common.types.Type',
 }
 autoclass_content = 'both'
 autodoc_default_options = {

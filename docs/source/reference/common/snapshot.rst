@@ -1,0 +1,4 @@
+Snapshot
+========
+
+.. automodule:: snapshot

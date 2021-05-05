@@ -4,9 +4,9 @@ from dsw_sdk.http_client.requests_impl.http_client import (
     SessionHttpClient,
 )
 from dsw_sdk.high_level_api.models.user import User
-from high_level_api.models.templates.template import Template
-from high_level_api.models.templates.template_file import TemplateFile
-from sdk import DataStewardshipWizardSDK
+from dsw_sdk.high_level_api.models.templates.template import Template
+from dsw_sdk.high_level_api.models.templates.template_file import TemplateFile
+from dsw_sdk.sdk import DataStewardshipWizardSDK
 
 
 class CustomHttpClient(SessionHttpClient):
@@ -26,7 +26,6 @@ dsw_sdk = DataStewardshipWizardSDK(
     # enable_ssl=False,   # E.g. testing purposes, local development
     # auth_endpoint='/tokens',
     # headers={'X-TEST-HEADER': 'TEST HEADER VALUE'},
-    # session=requests.Session(),   # Some specific requirements for session (e.g. customize the auth method)
     # default_timeout=(6, 120),   # E.g. for slow networks
     # conf_file='../tests/unit_tests/config/test_config.yaml',
     # --- Logger conf ---
@@ -35,7 +34,8 @@ dsw_sdk = DataStewardshipWizardSDK(
     # logger_format='%(message)s'
     # --- Dependency injection stuff ---
     # http_client=CustomHttpClient(..., ..., ...),
-    # logger=CustomLogger,    # Definitely subclasses of `logging.Logger`
+    # logger=CustomLogger,    # Definitely subclasses of `logging.Logger`,
+    # session=requests.Session(),   # Some specific requirements for session (e.g. customize the auth method)
 )
 
 # If we don't specify any parameters, we get all templates

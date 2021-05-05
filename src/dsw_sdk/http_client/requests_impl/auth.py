@@ -38,9 +38,9 @@ class TokenRetrievalStrategy:
         Make a POST request to the authentication URL and obtain new auth
         token.
 
-        :raises: :class:`requests.HTTPError` on HTTP status codes between 400
+        :raises: :exc:`requests.HTTPError` on HTTP status codes between 400
                  and 599
-        :raises: :class:`~interface.UnexpectedAuthError` on missing token in
+        :raises: :exc:`~interface.UnexpectedAuthError` on missing token in
                  HTTP response body
 
         :return: authentication token to be passed with every request
@@ -112,7 +112,7 @@ class JWTBearerAuth(BearerAuth):
 
         :param jwt_token: string representation of a JWT token (encoded)
 
-        :raises: :class:`~interface.UnexpectedAuthError` if
+        :raises: :exc:`~interface.UnexpectedAuthError` if
                  ``jwt_token`` is not a valid JWT token
 
         :return: datetime of expiration

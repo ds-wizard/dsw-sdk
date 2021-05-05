@@ -133,9 +133,9 @@ class HttpClient:
         :param path: path for the request
         :param kwargs: Optional arguments that the request takes
 
-        :raises: :class:`HttpError` on HTTP status codes between 400 and 599
+        :raises: :exc:`HttpError` on HTTP status codes between 400 and 599
                  while authenticating or doing the request itself
-        :raises: :class:`UnexpectedAuthError` on unexpected errors while
+        :raises: :exc:`UnexpectedAuthError` on unexpected errors while
                  authenticating
 
         :return: a response from the server contained
@@ -150,9 +150,9 @@ class HttpClient:
         :param path: path for the request
         :param kwargs: Optional arguments that the request takes
 
-        :raises: :class:`HttpError` on HTTP status codes between 400 and 599
+        :raises: :exc:`HttpError` on HTTP status codes between 400 and 599
                  while authenticating or doing the request itself
-        :raises: :class:`UnexpectedAuthError` on unexpected errors while
+        :raises: :exc:`UnexpectedAuthError` on unexpected errors while
                  authenticating
 
         :return: a response from the server contained
@@ -167,9 +167,9 @@ class HttpClient:
         :param path: path for the request
         :param kwargs: Optional arguments that the request takes
 
-        :raises: :class:`HttpError` on HTTP status codes between 400 and 599
+        :raises: :exc:`HttpError` on HTTP status codes between 400 and 599
                  while authenticating or doing the request itself
-        :raises: :class:`UnexpectedAuthError` on unexpected errors while
+        :raises: :exc:`UnexpectedAuthError` on unexpected errors while
                  authenticating
 
         :return: a response from the server contained
@@ -186,9 +186,9 @@ class HttpClient:
         :param body: body of the request
         :param kwargs: Optional arguments that the request takes
 
-        :raises: :class:`HttpError` on HTTP status codes between 400 and 599
+        :raises: :exc:`HttpError` on HTTP status codes between 400 and 599
                  while authenticating or doing the request itself
-        :raises: :class:`UnexpectedAuthError` on unexpected errors while
+        :raises: :exc:`UnexpectedAuthError` on unexpected errors while
                  authenticating
 
         :return: a response from the server contained
@@ -205,9 +205,9 @@ class HttpClient:
         :param body: body of the request
         :param kwargs: Optional arguments that the request takes
 
-        :raises: :class:`HttpError` on HTTP status codes between 400 and 599
+        :raises: :exc:`HttpError` on HTTP status codes between 400 and 599
                  while authenticating or doing the request itself
-        :raises: :class:`UnexpectedAuthError` on unexpected errors while
+        :raises: :exc:`UnexpectedAuthError` on unexpected errors while
                  authenticating
 
         :return: a response from the server contained
@@ -222,9 +222,9 @@ class HttpClient:
         :param path: path for the request
         :param kwargs: Optional arguments that the request takes
 
-        :raises: :class:`HttpError` on HTTP status codes between 400 and 599
+        :raises: :exc:`HttpError` on HTTP status codes between 400 and 599
                  while authenticating or doing the request itself
-        :raises: :class:`UnexpectedAuthError` on unexpected errors while
+        :raises: :exc:`UnexpectedAuthError` on unexpected errors while
                  authenticating
 
         :return: a response from the server contained

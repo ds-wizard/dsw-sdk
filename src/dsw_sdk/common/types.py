@@ -1,6 +1,8 @@
 """
-Module containing all the data types used with ``~common.Attribute`` classes.
+Module containing all the data types used with :class:`~common.Attribute`
+classes.
 """
+from __future__ import annotations
 
 import json
 import re
@@ -52,7 +54,7 @@ class Type:
 
         :param value: value to be validated
 
-        :raises: :class:`ValueError` if validation fails
+        :raises: :exc:`ValueError` if validation fails
         """
         if not type(value) == self._type:   # pylint: disable=C0123
             raise ValueError

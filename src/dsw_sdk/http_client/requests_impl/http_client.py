@@ -1,6 +1,6 @@
 """
 Module containing a synchronous implementation of the
-:class:`~dsw_sdk.http_client.interface.HttpClient`
+:class:`~interface.HttpClient`
 interface via the popular `requests` library.
 """
 
@@ -154,9 +154,9 @@ class SessionHttpClient(HttpClient):
                      HTTP request
         :param path: path part of the URL
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
 
         :return: HTTP response, possibly modified by the
@@ -195,9 +195,9 @@ class SessionHttpClient(HttpClient):
         :param path: path for the new :class:`requests.Request` object.
         :param kwargs: Optional arguments that the request takes.
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
         """
         return self._request(self._session.head, path, **kwargs)
@@ -209,9 +209,9 @@ class SessionHttpClient(HttpClient):
         :param path: path for the new :class:`requests.Request` object.
         :param kwargs: Optional arguments that the request takes.
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
         """
         return self._request(self._session.options, path, **kwargs)
@@ -223,9 +223,9 @@ class SessionHttpClient(HttpClient):
         :param path: path for the new :class:`requests.Request` object.
         :param kwargs: Optional arguments that request takes.
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
         """
         return self._request(self._session.get, path, **kwargs)
@@ -240,9 +240,9 @@ class SessionHttpClient(HttpClient):
                      :class:`requests.Request`.
         :param kwargs: Optional arguments that the request takes.
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
         """
         return self._request(self._session.post, path, json=body, **kwargs)
@@ -257,9 +257,9 @@ class SessionHttpClient(HttpClient):
                      :class:`requests.Request`.
         :param kwargs: Optional arguments that the request takes.
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
         """
         return self._request(self._session.put, path, json=body, **kwargs)
@@ -271,9 +271,9 @@ class SessionHttpClient(HttpClient):
         :param path: path for the new :class:`requests.Request` object.
         :param kwargs: Optional arguments that the request takes.
 
-        :raises: :class:`~interface.HttpError` on HTTP status codes between 400
+        :raises: :exc:`~interface.HttpError` on HTTP status codes between 400
                  and 599 while authenticating or doing the request itself
-        :raises: :class:`~interface.UnexpectedAuthError` on unexpected errors
+        :raises: :exc:`~interface.UnexpectedAuthError` on unexpected errors
                  while authenticating
         """
         return self._request(self._session.delete, path, **kwargs)

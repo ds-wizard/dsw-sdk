@@ -10,13 +10,7 @@ Welcome to Data Stewardship Wizard SDK's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   http_client
-   low_level_api
-   config
-   app_config_api
-   document_api
-   model
-
+   reference/index
 
 Indices and tables
 ==================

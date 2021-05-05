@@ -1,3 +1,7 @@
+"""
+Common classes for high-level APIs.
+"""
+
 from typing import Any, Callable, Dict, List, Type, TypeVar
 
 from dsw_sdk.http_client.interface import (
@@ -11,6 +15,10 @@ T = TypeVar('T')
 
 
 class NotInRegistryError(Exception):
+    """
+    Raised when attempting to pull an entity that is not present in the
+    Data Stewardship Registry.
+    """
     msg = '{} {} were not found in the registry.'
 
     def __init__(self, entity_types: str, ids: List[str]):
@@ -18,6 +26,11 @@ class NotInRegistryError(Exception):
 
 
 class API:
+    """
+    Class defining common logic for all the other high-level APIs.
+    Every subclass should define the :attr:`model_class` class attribute (it's
+    the model class that the API is working with, e.g. :class:`~models.User`).
+    """
     model_class: Type[T]
 
     def __init__(self, sdk):
@@ -39,6 +52,10 @@ class API:
         data: List[Dict[str, Any]] = response['_embedded'][data_key]
 
         if query_params.get('page') is None:
+            # If the user haven't specified `page` nor `size`, we can assume
+            # that he/she wants all available results. But the API returns
+            # at most 100 entries so we have to load to gradually. Same goes
+            # for the case, when user specifies a size greater than 100.
             page = 1
             while (
                 response['page']['number'] + 1 < response['page']['totalPages']
@@ -68,6 +85,11 @@ class API:
 
 
 class RegistryAPIMixin:
+    """
+    Mixin class providing common functionality for communicating with the
+    Data Stewardship Registry.
+    """
+
     @staticmethod
     def _pull(func: Callable[[str], HttpResponse],
               entity_types: str, ids: List[str]):

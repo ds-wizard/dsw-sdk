@@ -1,0 +1,4 @@
+User model
+==========
+
+.. automodule:: user

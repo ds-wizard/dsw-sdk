@@ -130,7 +130,7 @@ class DeletedState(State):
 
         :param model: model to perform the "save" operation on
 
-        :raises: :class:`AlreadyRemovedError` always
+        :raises: :exc:`AlreadyRemovedError` always
         """
         raise AlreadyRemovedError(model)
 
@@ -209,7 +209,7 @@ class Model(AttributesMixin):
         :param item: name of the attribute that was requested
         :return: ``None``
 
-        :raises: :class:`AttributeError` if the attribute does not exist
+        :raises: :exc:`AttributeError` if the attribute does not exist
                  on this entity
         """
         if item in self.attr_names:
@@ -250,7 +250,7 @@ class Model(AttributesMixin):
         If there are some changes to save, persist them on the server.
         It will either create or update the entity, according to it's state.
 
-        :raises: :class:`AlreadyRemovedError` if the entity was already deleted
+        :raises: :exc:`AlreadyRemovedError` if the entity was already deleted
         """
         if snapshots_diff(self._snapshot, make_snapshot(self)):
             self._state = self._state.save(self)

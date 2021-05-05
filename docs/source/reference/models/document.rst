@@ -1,0 +1,4 @@
+Document model
+==============
+
+.. automodule:: document

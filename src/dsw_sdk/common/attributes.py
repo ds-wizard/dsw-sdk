@@ -7,17 +7,14 @@ When designing this library, there was a need to implement some kind of
 mechanism, that would allow following:
 
     * Easy definition of data entities and their attributes, including
-    their type, default value, range and whether they are immutable or
-    read-only. This should be done in as declarative and concise form
-    as possible.
-
+      their type, default value, range and whether they are immutable or
+      read-only. This should be done in as declarative and concise form
+      as possible.
     * Validation and possible conversion of values when assigning to
-    these attributes.
-
+      these attributes.
     * Possibility to initialize the whole entity either in one step
-    (passing all the values to the ``__init__`` method) or gradually
-    by assigning one attribute at a time.
-
+      (passing all the values to the ``__init__`` method) or gradually
+      by assigning one attribute at a time.
     * There must be a way to initialize the entity without any validation.
 
 Because of these requirements, I decided to implement the attribute as a
@@ -311,7 +308,7 @@ class AttributesMixin:
         Validates if all attributes that are needed (i.e. they don't have
         the ``nullable`` flag set) are set. If not, raises an exception.
 
-        :raises: :class:`AttributesNotSetError` if there are
+        :raises: :exc:`AttributesNotSetError` if there are
                  some attributes needed to be set
         """
         errors = []
@@ -348,13 +345,13 @@ class AttributesMixin:
         :param kwargs: all the attributes you want to set, same
                        as ``kwargs`` in :meth:`__init__` method
 
-        :raises: :class:`ReadOnlyAccessError` if setting `read-only`
+        :raises: :exc:`ReadOnlyAccessError` if setting `read-only`
                  attribute
-        :raises: :class:`ModifyImmutableError` if modifying `immutable`
+        :raises: :exc:`ModifyImmutableError` if modifying `immutable`
                  attribute that was already set
-        :raises: :class:`InvalidValueError` if the value given
+        :raises: :exc:`InvalidValueError` if the value given
                  for the attribute is of invalid type
-        :raises: :class:`NotInChoicesError` if the value given
+        :raises: :exc:`NotInChoicesError` if the value given
                  for the attribute is not in the defined range
         """
         self._with_validations = False
@@ -378,6 +375,16 @@ class Attribute:
     def __init__(self, type_: Type, default: Any = NOT_SET,
                  nullable: bool = False, read_only: bool = False,
                  immutable: bool = False, choices: Sequence[Any] = None):
+        """
+        :param `type_`: type of the attribute
+        :param default: default value for the attribute
+        :param nullable: whether ``None`` should be a valid value
+        :param read_only: if set to ``True``, assigning to this attribute will
+            raise an exception
+        :param immutable: if set to ``True``, it's possible to assign a value
+            to this attribute only once; any other try will raise an exception
+        :param choices: sequence defining range of possible values
+        """
         if nullable:
             type_ = UnionType(NoneType(), type_)
             default = None if default == NOT_SET else default

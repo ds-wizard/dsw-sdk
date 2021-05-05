@@ -2,6 +2,7 @@
 Module containing all classes and functions
 responsible for dealing with snapshots.
 """
+from __future__ import annotations
 
 from typing import Any, Dict, ItemsView
 

@@ -60,8 +60,12 @@ class ComponentConfig(Mapping, AttributesMixin):
         ...     some_value = StringAttribute()
 
         >>> conf = Conf()
+        >>> conf.some_value
+        Traceback (most recent call last):
+        ...
+        dsw_sdk.common.attributes.AttributeNotSetError: ...
         >>> conf.some_value = 'foo'
-
+        
         # Check if the value is set
         >>> 'some_value' in conf
         True
@@ -162,7 +166,7 @@ class Config:
 
     """
     _FILE_SECTION = 'dsw_sdk'
-    _ENV_PREFIX = 'DSW_SDK'
+    _ENV_PREFIX = 'DSW_SDK_'
 
     def __init__(self, **obj_config):
         """
@@ -199,7 +203,7 @@ class Config:
         env_config = {}
 
         for k, v in os.environ.items():  # pylint: disable=C0103
-            if not k.startswith(cls._ENV_PREFIX):
+            if not k.upper().startswith(cls._ENV_PREFIX):
                 continue
             key = k.lstrip(cls._ENV_PREFIX).lower()
             env_config.update({key: v})

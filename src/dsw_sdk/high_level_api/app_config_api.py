@@ -1,6 +1,10 @@
+"""
+App config high-level API.
+"""
+
 from __future__ import annotations
 
-from dsw_sdk.high_level_api.api import API
+from dsw_sdk.high_level_api.common_api import API
 from dsw_sdk.high_level_api.models.app_config import AppConfig
 
 

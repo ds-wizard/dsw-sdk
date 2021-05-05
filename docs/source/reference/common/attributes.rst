@@ -1,0 +1,4 @@
+Attributes
+==========
+
+.. automodule:: attributes
