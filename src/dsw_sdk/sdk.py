@@ -80,6 +80,8 @@ class DataStewardshipWizardSDK:  # pylint: disable=R0902
 
     Here is a list of all possible configuration values:
 
+    .. _config_values:
+
     :Keyword arguments:
         * **api_url** (`str`):
           URL address of the DSW API you want to connect to. It must contain
