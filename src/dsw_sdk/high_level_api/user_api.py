@@ -19,7 +19,7 @@ class UserAPI(API):
 
     Example usage:
 
-    .. code-block::python
+    .. code-block:: python
 
         api = UserAPI(...)
 
