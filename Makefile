@@ -23,6 +23,8 @@ mypy:
 flake8:
 	flake8 --statistics --show-source --exit-zero "${FILE}"
 
+lint: pylint flake8
+
 metrics: pylint mypy flake8
 
 # --------------------------------- Tests ------------------------------------

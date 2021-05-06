@@ -5,18 +5,18 @@ name: Tests
 on:
   push:
     paths:
-      - '.github/workflows/tests.yml'
-      - 'src/**'
-      - 'tests/**'
-      - 'Pipfile.lock'
-      # Even if we change the packaging, we should test it as we are
-      # testing against installation and not the source codes only 
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'tox.ini'
+    - '.github/workflows/tests.yml'
+    - 'src/**'
+    - 'tests/**'
+    - 'Pipfile.lock'
+    # Even if we change the packaging, we should test it as we are
+    # testing against installation and not the source codes only
+    - 'pyproject.toml'
+    - 'setup.cfg'
+    - 'tox.ini'
   pull_request:
     branches:
-      - master
+    - master
 
 jobs:
   tests:
@@ -34,15 +34,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip tox
+      run: python -m pip install --upgrade pip tox
     - name: Test with tox
       env:
         # Disable the spinner as it massively pollutes the output
         TOX_PARALLEL_NO_SPINNER: 1
       # Running tests in parallel with `-p` option
-      run: |
-        tox -p
+      run: tox -p
     - name: Upload test results
       uses: actions/upload-artifact@v2
       # Use always() to always run this step to publish test results when there are test failures
@@ -59,14 +57,14 @@ jobs:
     if: success() || failure()
 
     steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          path: artifacts
+    - name: Download Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        path: artifacts
 
-      - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        with:
-          check_name: "Test results"
-          comment_title: "Test results"
-          files: artifacts/**/*_tests.xml
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      with:
+        check_name: "Test results"
+        comment_title: "Test results"
+        files: artifacts/**/*_tests.xml
