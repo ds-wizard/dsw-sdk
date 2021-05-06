@@ -5,7 +5,7 @@ API_SWAGGER := https://api.demo.ds-wizard.org/swagger.json
 # ------------------------------ Low-level API -------------------------------
 
 generate_api:
-	PYTHONPATH="`pwd`/src:${PYTHONPATH}" python3 src/dsw_sdk/low_level_api/tools/generate.py ${API_SWAGGER}
+	PYTHONPATH="`pwd`/src:${PYTHONPATH}" python3 src/dsw_sdk/low_level_api/tools/generate.py "${API_SWAGGER}"
 
 # ----------------------------------- Docs -----------------------------------
 
@@ -44,6 +44,9 @@ functional_tests:
 record_test_cassettes:
 	rm -f tests/fixtures/cassettes/*
 	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --recreate-cassettes tests/
+
+doctest:
+	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --doctest-modules "${FILE}"
 
 # ------------------------------- Packaging ----------------------------------
 
