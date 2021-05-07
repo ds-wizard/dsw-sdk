@@ -72,7 +72,7 @@ autodoc_default_options = {
     'members': True,
     'undoc-members': True,
 }
-
+autodoc_mock_imports = ['yaml', 'jwt']
 
 # -- Options for HTML output -------------------------------------------------
 

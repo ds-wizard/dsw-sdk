@@ -70,6 +70,4 @@ user.save()
 user.delete()
 ```
 
-For more advanced usage, see the ... (here will be a link to the documenation 
-hosted on https://readthedocs.org/; but for now you have to build the docs 
-yourself with `make docs` command).
+For more advanced usage, see the [docs](https://dsw-sdk.readthedocs.io/en/latest/).
