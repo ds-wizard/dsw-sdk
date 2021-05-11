@@ -1,6 +1,7 @@
 [![Static analysis](https://github.com/ds-wizard/dsw-sdk/actions/workflows/static_analysis.yml/badge.svg?branch=master)](https://github.com/ds-wizard/dsw-sdk/actions/workflows/static_analysis.yml)
 [![Tests](https://github.com/ds-wizard/dsw-sdk/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/ds-wizard/dsw-sdk/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/dsw-sdk/badge/?version=latest)](https://dsw-sdk.readthedocs.io/en/latest/?badge=latest)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # DSW SDK
 
