@@ -1,4 +1,5 @@
 from dsw_sdk.common.attributes import (
+    BoolAttribute,
     DateTimeAttribute,
     DictAttribute,
     IntegerAttribute,
@@ -42,6 +43,7 @@ from dsw_sdk.high_level_api.models.templates.template import (
 class Questionnaire(Model):
     created_at = DateTimeAttribute()
     creator_uuid = StringAttribute(nullable=True)
+    description = StringAttribute(nullable=True)
     events = ListAttribute(MappingType('type', {
         SET_REPLY_EVENT: ObjectType(SetReplyEvent),
         CLEAR_REPLY_EVENT: ObjectType(ClearReplyEvent),
@@ -50,6 +52,7 @@ class Questionnaire(Model):
     }))
     format = ObjectAttribute(TemplateFormat, nullable=True)
     format_uuid = StringAttribute(nullable=True)
+    is_template = BoolAttribute()
     knowledge_model = ObjectAttribute(KnowledgeModel)
     labels = DictAttribute(StringType(), StringType())
     level = IntegerAttribute()
