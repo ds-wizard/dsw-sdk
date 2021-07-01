@@ -43,8 +43,8 @@ class API:
         data = func(uuid).json()
         return self._create_loaded(data)
 
-    def _get_many(self, func: Callable[[Dict[str, Any]], HttpResponse],
-                  data_key: str, **query_params) -> List[Model]:
+    def _get_many_data(self, func: Callable[[Dict[str, Any]], HttpResponse],
+                       data_key: str, **query_params) -> List[Dict[str, Any]]:
         self._last_response = func(query_params)
         response = self._last_response.json()
         data: List[Dict[str, Any]] = response['_embedded'][data_key]
@@ -63,6 +63,11 @@ class API:
                 page += 1
                 data.extend(response['_embedded'][data_key])
 
+        return data
+
+    def _get_many(self, func: Callable[[Dict[str, Any]], HttpResponse],
+                  data_key: str, **query_params) -> List[Model]:
+        data = self._get_many_data(func, data_key, **query_params)
         return [self._create_loaded(d) for d in data]
 
     def _create_new(self, **kwargs) -> Model:
