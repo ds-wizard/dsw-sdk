@@ -122,6 +122,7 @@ class AppConfigQuestionnaireVisibility(AttributesMixin):
 
 
 class AppConfigQuestionnaireSharing(AttributesMixin):
+    anonymous_enabled = BoolAttribute()
     default_value = StringAttribute(choices=QUESTIONNAIRE_SHARING)
     enabled = BoolAttribute()
 
