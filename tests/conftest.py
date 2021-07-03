@@ -120,7 +120,7 @@ def template_data():
         'license': 'MIT',
         'metamodel_version': 3,
         'name': 'Test template',
-        'organization_id': 'Test org',
+        'organization_id': 'Test_org',
         'readme': 'dont read me',
         'template_id': ''.join(random.choices(string.ascii_letters, k=10)),
         'version': '1.2.0',
