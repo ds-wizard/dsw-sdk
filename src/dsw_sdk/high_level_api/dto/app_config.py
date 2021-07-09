@@ -11,6 +11,22 @@ from dsw_sdk.high_level_api.dto.questionnaire import (
 )
 
 
+class PackagePattern(AttributesMixin):
+    km_id = StringAttribute(nullable=True)
+    max_version = StringAttribute(nullable=True)
+    min_version = StringAttribute(nullable=True)
+    org_id = StringAttribute(nullable=True)
+
+
+class AppConfigKnowledgeModelPublic(AttributesMixin):
+    enabled = BoolAttribute()
+    packages = ListAttribute(ObjectType(PackagePattern))
+
+
+class AppConfigKnowledgeModel(AttributesMixin):
+    public = ObjectAttribute(AppConfigKnowledgeModelPublic)
+
+
 class AppConfigOrganization(AttributesMixin):
     affiliations = ListAttribute(StringType())
     description = StringAttribute()
@@ -106,6 +122,7 @@ class AppConfigQuestionnaireVisibility(AttributesMixin):
 
 
 class AppConfigQuestionnaireSharing(AttributesMixin):
+    anonymous_enabled = BoolAttribute()
     default_value = StringAttribute(choices=QUESTIONNAIRE_SHARING)
     enabled = BoolAttribute()
 
@@ -167,6 +184,7 @@ class AppConfigSubmission(AttributesMixin):
 class AppConfigChangeDTO(AttributesMixin):
     authentication = ObjectAttribute(AppConfigAuth)
     dashboard = ObjectAttribute(AppConfigDashboard)
+    knowledge_model = ObjectAttribute(AppConfigKnowledgeModel)
     look_and_feel = ObjectAttribute(AppConfigLookAndFeel)
     organization = ObjectAttribute(AppConfigOrganization)
     privacy_and_support = ObjectAttribute(AppConfigPrivacyAndSupport)

@@ -1,7 +1,9 @@
 from dsw_sdk.common.attributes import DateTimeAttribute, ObjectAttribute
 from dsw_sdk.high_level_api.dto.app_config import (
     AppConfigAuth,
+    AppConfigChangeDTO,
     AppConfigDashboard,
+    AppConfigKnowledgeModel,
     AppConfigLookAndFeel,
     AppConfigOrganization,
     AppConfigPrivacyAndSupport,
@@ -9,7 +11,6 @@ from dsw_sdk.high_level_api.dto.app_config import (
     AppConfigRegistry,
     AppConfigSubmission,
     AppConfigTemplate,
-    AppConfigChangeDTO,
 )
 from dsw_sdk.high_level_api.models.model import Model
 
@@ -18,6 +19,7 @@ class AppConfig(Model):
     authentication = ObjectAttribute(AppConfigAuth)
     created_at = DateTimeAttribute()
     dashboard = ObjectAttribute(AppConfigDashboard)
+    knowledge_model = ObjectAttribute(AppConfigKnowledgeModel)
     look_and_feel = ObjectAttribute(AppConfigLookAndFeel)
     organization = ObjectAttribute(AppConfigOrganization)
     privacy_and_support = ObjectAttribute(AppConfigPrivacyAndSupport)

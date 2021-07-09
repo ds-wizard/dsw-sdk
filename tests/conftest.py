@@ -37,8 +37,15 @@ def pytest_addoption(parser):
         '--recreate-cassettes',
         action='store_true',
         default=False,
-        help='If set, it will create new cassette for each HTTP request. Be'
+        help='If set, it will create new cassette for each HTTP request. Be '
              'aware that DSW instance must be running on the given address.',
+    )
+    parser.addoption(
+        '--no-cassettes',
+        action='store_true',
+        default=False,
+        help='If set, the Betamax cassettes will not be used and every HTTP '
+             'request will be performed as usual.'
     )
 
 
@@ -57,12 +64,24 @@ def dsw_sdk(request, betamax_session):
         Instead, it will read the responses from the cassettes. If there is no
         matching cassette for a given request, the test will fail.
     """
-    if request.config.option.recreate_cassettes:
+    recreate_cassettes = request.config.option.recreate_cassettes
+    no_cassettes = request.config.option.no_cassettes
+    if recreate_cassettes and no_cassettes:
+        raise ValueError('Cannot use both options `--recreate-cassettes` '
+                         'and --no-cassettes as the same time.')
+
+    if recreate_cassettes:
         return DataStewardshipWizardSDK(
             api_url='http://localhost:3000',
             email='albert.einstein@example.com',
             password='password',
             session=betamax_session,
+        )
+    elif no_cassettes:
+        return DataStewardshipWizardSDK(
+            api_url='http://localhost:3000',
+            email='albert.einstein@example.com',
+            password='password',
         )
     else:
         # If we are using cassettes (and thus not doing any HTTP requests),
@@ -120,7 +139,7 @@ def template_data():
         'license': 'MIT',
         'metamodel_version': 3,
         'name': 'Test template',
-        'organization_id': 'Test org',
+        'organization_id': 'Test_org',
         'readme': 'dont read me',
         'template_id': ''.join(random.choices(string.ascii_letters, k=10)),
         'version': '1.2.0',
