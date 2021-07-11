@@ -3,7 +3,7 @@ from dsw_sdk.common.attributes import (
     ObjectAttribute,
     StringAttribute,
 )
-from dsw_sdk.high_level_api.dto.questionnaire import QuestionnaireDTO
+from dsw_sdk.high_level_api.dto.questionnaire import QuestionnaireSimple
 from dsw_sdk.high_level_api.dto.template import TemplateSimpleDTO
 from dsw_sdk.high_level_api.models.model import Model
 
@@ -25,7 +25,7 @@ class Document(Model):
     creator_uuid = StringAttribute(nullable=True)
     format_uuid = StringAttribute()
     name = StringAttribute()
-    questionnaire = ObjectAttribute(QuestionnaireDTO, nullable=True)
+    questionnaire = ObjectAttribute(QuestionnaireSimple, nullable=True)
     questionnaire_event_uuid = StringAttribute(nullable=True)
     state = StringAttribute(choices=DOCUMENT_STATES)
     template = ObjectAttribute(TemplateSimpleDTO)

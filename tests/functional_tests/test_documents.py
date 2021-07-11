@@ -1,6 +1,6 @@
 from pytest_data import use_data
 
-from dsw_sdk.high_level_api.dto.questionnaire import QuestionnaireDTO
+from dsw_sdk.high_level_api.dto.questionnaire import QuestionnaireSimple
 from dsw_sdk.high_level_api.models.document import DONE_DOCUMENT_STATE
 
 
@@ -18,7 +18,7 @@ def test_get_document(dsw_sdk, document):
     _modify_documents([document, loaded_document])
 
     assert loaded_document == document
-    assert isinstance(loaded_document.questionnaire, QuestionnaireDTO)
+    assert isinstance(loaded_document.questionnaire, QuestionnaireSimple)
 
 
 @use_data(documents_data=[
