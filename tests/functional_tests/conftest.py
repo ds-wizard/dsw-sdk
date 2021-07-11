@@ -20,46 +20,13 @@ from dsw_sdk.high_level_api.models.templates.template_file import TemplateFile
 from dsw_sdk.high_level_api.models.user import User
 
 
-# ------------------------------- Clean up -----------------------------------
-
-
-def _clean(dsw_sdk):
-    data = dsw_sdk.api.get_branches({'q': 'test'}).json()
-    branches = data['_embedded']['branches']
-    for branch in branches:
-        dsw_sdk.api.delete_branch(branch['uuid'])
-
-    data = dsw_sdk.api.get_questionnaires({'q': 'test'}).json()
-    questionnaires = data['_embedded']['questionnaires']
-    for questionnaire in questionnaires:
-        dsw_sdk.api.delete_questionnaire(questionnaire['uuid'])
-
-    data = dsw_sdk.api.get_packages({'q': 'test'}).json()
-    packages = data['_embedded']['packages']
-    for package in packages:
-        dsw_sdk.api.delete_package(package['id'])
-
-    data = dsw_sdk.api.get_documents({'q': 'Test'}).json()
-    documents = data['_embedded']['documents']
-    for document in documents:
-        dsw_sdk.api.delete_document(document['uuid'])
-
-    data = dsw_sdk.api.get_templates({'q': 'Test template'}).json()
-    templates = data['_embedded']['templates']
-    for template in templates:
-        dsw_sdk.api.delete_template(template['id'])
-
-    data = dsw_sdk.api.get_users({'q': 'doe'}).json()
-    users = data['_embedded']['users']
-    for user in users:
-        dsw_sdk.api.delete_user(user['uuid'])
-
-
 @pytest.fixture(autouse=True)
-def clean(dsw_sdk):
-    _clean(dsw_sdk)
-    yield
-    _clean(dsw_sdk)
+def auto_clean(clean):
+    """
+    Using empty "autouse" fixture to ensure that the `clean` fixture will be
+    called automatically for the whole testing module (before each test).
+    """
+    pass
 
 
 # ------------------------------- Templates ----------------------------------
