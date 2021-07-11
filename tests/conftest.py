@@ -108,20 +108,40 @@ def user_data(request):
     return get_data(request, 'user_data_data', data)
 
 
+# ---------------------------- Knowledge models ------------------------------
+
+
+@pytest.fixture
+def branch(dsw_sdk):
+    return dsw_sdk.api.post_branches(body={
+        'km_id': 'test-km',
+        'name': 'Test KM',
+    }).json()
+
+
+@pytest.fixture
+def package(dsw_sdk, branch):
+    return dsw_sdk.api.put_branch_version(branch['uuid'], '1.0.0', body={
+        'readme': 'Test readme',
+        'license': 'Test license',
+        'description': 'Test description',
+    }).json()
+
+
 # -------------------------------- Templates ---------------------------------
 
 
 @pytest.fixture
-def template_data():
+def template_data(package):
     # Testing creating templates with both object ('allowed_packages')
     # and Python dict ('formats').
     return {
         'allowed_packages': [
             TemplateAllowedPackage(
-                min_version=None,
-                km_id=None,
-                max_version=None,
-                org_id='global',
+                min_version=package['version'],
+                km_id=package['kmId'],
+                max_version=package['version'],
+                org_id=package['organizationId'],
             ),
         ],
         'description': 'Description',

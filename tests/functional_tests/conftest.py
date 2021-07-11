@@ -128,23 +128,6 @@ def registry_outdated_template_id(dsw_sdk):
 
 
 @pytest.fixture
-def branch(dsw_sdk):
-    return dsw_sdk.api.post_branches(body={
-        'km_id': 'test-km',
-        'name': 'Test KM',
-    }).json()
-
-
-@pytest.fixture
-def package(dsw_sdk, branch):
-    return dsw_sdk.api.put_branch_version(branch['uuid'], '1.0.0', body={
-        'readme': 'Test readme',
-        'license': 'Test license',
-        'description': 'Test description',
-    }).json()
-
-
-@pytest.fixture
 def registry_package_id(dsw_sdk):
     km_id = 'root'
     id_ = f'dsw:{km_id}:2.3.0'
@@ -182,11 +165,11 @@ def questionnaires(request, dsw_sdk, package):
 # ------------------------------- Documents ----------------------------------
 
 
-def _create_document(dsw_sdk, questionnaire, data=None):
+def _create_document(dsw_sdk, questionnaire, template, data=None):
     document_data = dsw_sdk.api.post_documents(body={
         'name': 'Test document',
         'questionnaire_uuid': questionnaire.uuid,
-        'template_id': 'dsw:questionnaire-report:1.3.0',
+        'template_id': template.id,
         'format_uuid': 'd3e98eb6-344d-481f-8e37-6a67b6cd1ad2',
         **(data or {}),
     }).json()
@@ -194,14 +177,17 @@ def _create_document(dsw_sdk, questionnaire, data=None):
 
 
 @pytest.fixture
-def document(dsw_sdk, questionnaire):
-    return _create_document(dsw_sdk, questionnaire)
+def document(dsw_sdk, questionnaire, template):
+    return _create_document(dsw_sdk, questionnaire, template)
 
 
 @pytest.fixture
-def documents(request, dsw_sdk, questionnaire):
+def documents(request, dsw_sdk, questionnaire, template):
     data = get_data(request, 'documents_data', [{}])
-    return [_create_document(dsw_sdk, questionnaire, d) for d in data]
+    return [
+        _create_document(dsw_sdk, questionnaire, template, d)
+        for d in data
+    ]
 
 
 # ---------------------------------- Users -----------------------------------
