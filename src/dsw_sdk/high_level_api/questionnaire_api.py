@@ -58,7 +58,7 @@ class QuestionnaireAPI(API):
 
         :return: list of objects, each representing a questionnaire
         """
-        questionnaires = self._get_many(self._sdk.api.get_questionnaires,
-                                        'questionnaires', **query_params)
-        return [self.get_questionnaire(questionnaire.uuid)
+        questionnaires = self._get_many_data(self._sdk.api.get_questionnaires,
+                                             'questionnaires', **query_params)
+        return [self.get_questionnaire(questionnaire['uuid'])
                 for questionnaire in questionnaires]
