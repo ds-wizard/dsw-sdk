@@ -8,7 +8,6 @@ from dsw_sdk.common.attributes import (
     StringAttribute,
 )
 from dsw_sdk.common.types import MappingType, ObjectType, StringType
-from dsw_sdk.high_level_api.dto.common import PackageSimpleDTO
 from dsw_sdk.high_level_api.dto.user import UserSuggestion
 
 
@@ -208,15 +207,6 @@ class QuestionnaireReportDTO(AttributesMixin):
     }))
 
 
-class QuestionnaireDTO(AttributesMixin):
-    created_at = DateTimeAttribute()
-    level = IntegerAttribute()
+class QuestionnaireSimple(AttributesMixin):
     name = StringAttribute()
-    package = ObjectAttribute(PackageSimpleDTO)
-    permissions = ListAttribute(ObjectType(QuestionnairePermRecordDTO))
-    report = ObjectType(QuestionnaireReportDTO)
-    sharing = StringAttribute(choices=QUESTIONNAIRE_SHARING)
-    state = StringAttribute(choices=QUESTIONNAIRE_STATES)
-    updated_at = DateTimeAttribute()
     uuid = StringAttribute()
-    visibility = StringAttribute(choices=QUESTIONNAIRE_VISIBILITIES)

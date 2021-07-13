@@ -122,9 +122,9 @@ class TemplateAPI(API, RegistryAPIMixin):
             query_params['organization_id'] = organization_id
         if template_id is not None:
             query_params['template_id'] = template_id
-        templates = self._get_many(self._sdk.api.get_templates,
-                                   'templates', **query_params)
-        return [self.get_template(template.id) for template in templates]
+        templates = self._get_many_data(self._sdk.api.get_templates,
+                                        'templates', **query_params)
+        return [self.get_template(template['id']) for template in templates]
 
     def create_template(self, **kwargs) -> Template:
         """

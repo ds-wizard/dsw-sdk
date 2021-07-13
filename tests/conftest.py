@@ -37,8 +37,15 @@ def pytest_addoption(parser):
         '--recreate-cassettes',
         action='store_true',
         default=False,
-        help='If set, it will create new cassette for each HTTP request. Be'
+        help='If set, it will create new cassette for each HTTP request. Be '
              'aware that DSW instance must be running on the given address.',
+    )
+    parser.addoption(
+        '--no-cassettes',
+        action='store_true',
+        default=False,
+        help='If set, the Betamax cassettes will not be used and every HTTP '
+             'request will be performed as usual.'
     )
 
 
@@ -57,12 +64,24 @@ def dsw_sdk(request, betamax_session):
         Instead, it will read the responses from the cassettes. If there is no
         matching cassette for a given request, the test will fail.
     """
-    if request.config.option.recreate_cassettes:
+    recreate_cassettes = request.config.option.recreate_cassettes
+    no_cassettes = request.config.option.no_cassettes
+    if recreate_cassettes and no_cassettes:
+        raise ValueError('Cannot use both options `--recreate-cassettes` '
+                         'and --no-cassettes as the same time.')
+
+    if recreate_cassettes:
         return DataStewardshipWizardSDK(
             api_url='http://localhost:3000',
             email='albert.einstein@example.com',
             password='password',
             session=betamax_session,
+        )
+    elif no_cassettes:
+        return DataStewardshipWizardSDK(
+            api_url='http://localhost:3000',
+            email='albert.einstein@example.com',
+            password='password',
         )
     else:
         # If we are using cassettes (and thus not doing any HTTP requests),
@@ -70,6 +89,48 @@ def dsw_sdk(request, betamax_session):
         client = NoAuthClient('http://localhost:3000', None,
                               logging.root, session=betamax_session)
         return DataStewardshipWizardSDK(http_client=client)
+
+
+# ------------------------------- Clean up -----------------------------------
+
+
+def _clean(dsw_sdk):
+    data = dsw_sdk.api.get_branches({'q': 'test'}).json()
+    branches = data['_embedded']['branches']
+    for branch in branches:
+        dsw_sdk.api.delete_branch(branch['uuid'])
+
+    data = dsw_sdk.api.get_questionnaires({'q': 'test'}).json()
+    questionnaires = data['_embedded']['questionnaires']
+    for questionnaire in questionnaires:
+        dsw_sdk.api.delete_questionnaire(questionnaire['uuid'])
+
+    data = dsw_sdk.api.get_packages({'q': 'test'}).json()
+    packages = data['_embedded']['packages']
+    for package in packages:
+        dsw_sdk.api.delete_package(package['id'])
+
+    data = dsw_sdk.api.get_documents({'q': 'Test'}).json()
+    documents = data['_embedded']['documents']
+    for document in documents:
+        dsw_sdk.api.delete_document(document['uuid'])
+
+    data = dsw_sdk.api.get_templates({'q': 'Test template'}).json()
+    templates = data['_embedded']['templates']
+    for template in templates:
+        dsw_sdk.api.delete_template(template['id'])
+
+    data = dsw_sdk.api.get_users({'q': 'doe'}).json()
+    users = data['_embedded']['users']
+    for user in users:
+        dsw_sdk.api.delete_user(user['uuid'])
+
+
+@pytest.fixture
+def clean(dsw_sdk):
+    _clean(dsw_sdk)
+    yield
+    _clean(dsw_sdk)
 
 
 # ---------------------------------- Users -----------------------------------
@@ -89,20 +150,40 @@ def user_data(request):
     return get_data(request, 'user_data_data', data)
 
 
+# ---------------------------- Knowledge models ------------------------------
+
+
+@pytest.fixture
+def branch(dsw_sdk):
+    return dsw_sdk.api.post_branches(body={
+        'km_id': 'test-km',
+        'name': 'Test KM',
+    }).json()
+
+
+@pytest.fixture
+def package(dsw_sdk, branch):
+    return dsw_sdk.api.put_branch_version(branch['uuid'], '1.0.0', body={
+        'readme': 'Test readme',
+        'license': 'Test license',
+        'description': 'Test description',
+    }).json()
+
+
 # -------------------------------- Templates ---------------------------------
 
 
 @pytest.fixture
-def template_data():
+def template_data(package):
     # Testing creating templates with both object ('allowed_packages')
     # and Python dict ('formats').
     return {
         'allowed_packages': [
             TemplateAllowedPackage(
-                min_version=None,
-                km_id=None,
-                max_version=None,
-                org_id='global',
+                min_version=package['version'],
+                km_id=package['kmId'],
+                max_version=package['version'],
+                org_id=package['organizationId'],
             ),
         ],
         'description': 'Description',
@@ -120,7 +201,7 @@ def template_data():
         'license': 'MIT',
         'metamodel_version': 3,
         'name': 'Test template',
-        'organization_id': 'Test org',
+        'organization_id': 'Test_org',
         'readme': 'dont read me',
         'template_id': ''.join(random.choices(string.ascii_letters, k=10)),
         'version': '1.2.0',
