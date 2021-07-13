@@ -1,3 +1,4 @@
+[![PyPI](https://img.shields.io/pypi/v/dsw-sdk)](https://pypi.org/project/dsw-sdk/)
 [![Static analysis](https://github.com/ds-wizard/dsw-sdk/actions/workflows/static_analysis.yml/badge.svg?branch=master)](https://github.com/ds-wizard/dsw-sdk/actions/workflows/static_analysis.yml)
 [![Tests](https://github.com/ds-wizard/dsw-sdk/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/ds-wizard/dsw-sdk/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/dsw-sdk/badge/?version=latest)](https://dsw-sdk.readthedocs.io/en/latest/?badge=latest)
