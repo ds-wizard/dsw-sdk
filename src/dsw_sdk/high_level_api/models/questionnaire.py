@@ -1,4 +1,5 @@
 from dsw_sdk.common.attributes import (
+    Alias,
     BoolAttribute,
     DateTimeAttribute,
     DictAttribute,
@@ -22,6 +23,8 @@ from dsw_sdk.high_level_api.dto.questionnaire import (
     QUESTIONNAIRE_SHARING,
     QUESTIONNAIRE_STATES,
     QUESTIONNAIRE_VISIBILITIES,
+    QuestionnaireCreateDTO,
+    QuestionnaireCreateFromTemplateDTO,
     QuestionnairePermRecordDTO,
     QuestionnaireVersion,
     Reply,
@@ -58,11 +61,14 @@ class Questionnaire(Model):
     level = IntegerAttribute()
     name = StringAttribute()
     package = ObjectAttribute(PackageSimpleDTO)
+    package_id = StringAttribute()
     permissions = ListAttribute(ObjectType(QuestionnairePermRecordDTO))
     replies = DictAttribute(StringType(), ObjectType(Reply))
     selected_tag_uuids = ListAttribute(StringType())
     sharing = StringAttribute(choices=QUESTIONNAIRE_SHARING)
     state = StringAttribute(choices=QUESTIONNAIRE_STATES)
+    # TODO: Unite with `selected_tag_uuids`
+    tag_uuids = Alias('selected_tag_uuids')
     template = ObjectAttribute(TemplateSimple, nullable=True)
     template_id = StringAttribute(nullable=True)
     updated_at = DateTimeAttribute()
@@ -72,7 +78,24 @@ class Questionnaire(Model):
     documents = ListOfModelsAttribute(Document, default=[])
 
     def _create(self):
-        raise NotImplementedError('Cannot create questionnaires')
+        dto = QuestionnaireCreateDTO(**self.attrs())
+        dto.validate()
+        data = self._sdk.api.post_questionnaires(body=dto.to_json()).json()
+        detail_data = self._sdk.api.get_questionnaire(
+            qtn_uuid=data['uuid']
+        ).json()
+        self._update_attrs(**detail_data)
+
+    def create_from_template(self, **kwargs):
+        dto = QuestionnaireCreateFromTemplateDTO(**kwargs)
+        dto.validate()
+        created_data = self._sdk.api.post_questionnaires_from_template(
+            body=dto.to_json()
+        ).json()
+        data = self._sdk.api.get_questionnaire(
+            qtn_uuid=created_data['uuid']
+        ).json()
+        self._update_attrs(**data)
 
     def _update(self):
         raise NotImplementedError('Cannot update questionnaires')
