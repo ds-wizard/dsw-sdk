@@ -132,6 +132,7 @@ class LowLevelAPI:
             dashboard: None
             lookAndFeel: None
             registry: None
+            knowledgeModel: None
             questionnaire: None
             template: None
             submission: None
