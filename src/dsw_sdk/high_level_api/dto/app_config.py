@@ -11,6 +11,18 @@ from dsw_sdk.high_level_api.dto.questionnaire import (
 )
 
 
+CUSTOM_QUESTIONNAIRE_CREATION = 'CustomQuestionnaireCreation'
+TEMPLATE_QUESTIONNAIRE_CREATION = 'TemplateQuestionnaireCreation'
+TEMPLATE_AND_CUSTOM_QUESTIONNAIRE_CREATION = (
+    'TemplateAndCustomQuestionnaireCreation'
+)
+QUESTIONNAIRE_CREATION = (
+    CUSTOM_QUESTIONNAIRE_CREATION,
+    TEMPLATE_QUESTIONNAIRE_CREATION,
+    TEMPLATE_AND_CUSTOM_QUESTIONNAIRE_CREATION,
+)
+
+
 class PackagePattern(AttributesMixin):
     km_id = StringAttribute(nullable=True)
     max_version = StringAttribute(nullable=True)
@@ -137,6 +149,7 @@ class AppConfigQuestionnaireFeedback(AttributesMixin):
 class AppConfigQuestionnaire(AttributesMixin):
     feedback = ObjectAttribute(AppConfigQuestionnaireFeedback)
     levels = ObjectAttribute(SimpleFeature)
+    questionnaire_creation = StringAttribute(choices=QUESTIONNAIRE_CREATION)
     questionnaire_sharing = ObjectAttribute(AppConfigQuestionnaireSharing)
     questionnaire_visibility = ObjectAttribute(
         AppConfigQuestionnaireVisibility
