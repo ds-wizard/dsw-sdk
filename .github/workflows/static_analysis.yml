@@ -5,6 +5,8 @@ on:
     paths:
     - '.github/workflows/static_analysis.yml'
     - 'src/**'
+    - 'pylintrc'
+    - 'setup.cfg'
   pull_request:
     branches:
     - master
