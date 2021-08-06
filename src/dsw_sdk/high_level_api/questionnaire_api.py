@@ -44,6 +44,7 @@ class QuestionnaireAPI(API):
         questionnaire = self._get_one(self._sdk.api.get_questionnaire, uuid)
         documents_page = self._sdk.api.get_questionnaire_documents(uuid).json()
         questionnaire._update_attrs(
+            package_id=questionnaire.package.id,
             documents=documents_page['_embedded']['documents']
         )
         return questionnaire
@@ -62,3 +63,31 @@ class QuestionnaireAPI(API):
                                              'questionnaires', **query_params)
         return [self.get_questionnaire(questionnaire['uuid'])
                 for questionnaire in questionnaires]
+
+    def create_questionnaire(self, **kwargs) -> Questionnaire:
+        """
+        Create a new questionnaire (custom).
+
+        :param kwargs: all the data needed for the questionnaire creation
+
+        :return: object representing the newly created questionnaire
+        """
+        return self._create_new(**kwargs)
+
+    def create_questionnaire_from_template(
+            self, name: str, questionnaire_uuid: str
+    ) -> Questionnaire:
+        """
+        Create a new questionnaire from a template
+
+        :param name: name of the new questionnaire
+        :param questionnaire_uuid: uuid of the template questionnaire
+
+        :return: object representing the newly created questionnaire
+        """
+        questionnaire = self.model_class(self._sdk)
+        questionnaire.create_from_template(
+            name=name,
+            questionnaire_uuid=questionnaire_uuid,
+        )
+        return questionnaire

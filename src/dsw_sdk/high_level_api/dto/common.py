@@ -37,3 +37,9 @@ class PackageSimpleDTO(AttributesMixin):
     state = StringAttribute(choices=PACKAGE_STATES)
     version = StringAttribute()
     versions = ListAttribute(StringType())
+
+
+class PackageSimple(AttributesMixin):
+    id = StringAttribute()
+    name = StringAttribute()
+    version = StringAttribute()
