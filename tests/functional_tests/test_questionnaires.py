@@ -1,5 +1,7 @@
 from pytest_data import use_data
 
+from dsw_sdk.high_level_api.models.questionnaire import Questionnaire
+
 
 def test_get_questionnaire(dsw_sdk, questionnaire):
     uuid = questionnaire.uuid
@@ -28,3 +30,19 @@ def test_get_many_questionnaires(dsw_sdk, questionnaires):
 
     res = dsw_sdk.questionnaires.get_questionnaires(sort='uuid,asc', q='many')
     assert res == sorted(questionnaires, key=lambda q: q.uuid)
+
+
+def test_create_questionnaire_via_api(dsw_sdk, questionnaire_data):
+    questionnaire = dsw_sdk.questionnaires.create_questionnaire(
+        **questionnaire_data
+    )
+    assert questionnaire.uuid is not None
+
+
+def test_create_questionnaire_from_template_via_api(
+        dsw_sdk, questionnaire_template_data
+):
+    questionnaire = dsw_sdk.questionnaires.create_questionnaire_from_template(
+        **questionnaire_template_data
+    )
+    assert questionnaire.uuid is not None

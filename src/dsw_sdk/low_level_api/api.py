@@ -340,6 +340,7 @@ class LowLevelAPI:
         """
         query_params:
             q [optional]: string
+            isTemplate [optional]: boolean
             page [optional]: integer
             size [optional]: integer
             sort [optional]: string
@@ -348,14 +349,31 @@ class LowLevelAPI:
         query_params = self._camelize_dict_keys(query_params)
         return self._http_client.get(f'/questionnaires', params=query_params, **kwargs)
     
-    def post_questionnaires(self, query_params: Optional[Dict[str, Any]] = None, **kwargs) -> HttpResponse:
+    def post_questionnaires(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
-        query_params:
-            cloneUuid [optional]: string
+        body:
+            name: string
+            packageId: string
+            visibility: None
+            sharing: None
+            tagUuids: array
         
         """
-        query_params = self._camelize_dict_keys(query_params)
-        return self._http_client.post(f'/questionnaires', params=query_params, **kwargs)
+        body = self._camelize_dict_keys(body)
+        return self._http_client.post(f'/questionnaires', body=body, **kwargs)
+    
+    def post_questionnaires_from_template(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
+        """
+        body:
+            name: string
+            questionnaireUuid: None
+        
+        """
+        body = self._camelize_dict_keys(body)
+        return self._http_client.post(f'/questionnaires/from-template', body=body, **kwargs)
+    
+    def post_questionnaire_clone(self, qtn_uuid: str, **kwargs) -> HttpResponse:
+        return self._http_client.post(f'/questionnaires/{qtn_uuid}/clone', **kwargs)
     
     def get_questionnaire(self, qtn_uuid: str, **kwargs) -> HttpResponse:
         return self._http_client.get(f'/questionnaires/{qtn_uuid}', **kwargs)
@@ -367,6 +385,7 @@ class LowLevelAPI:
             visibility: None
             sharing: None
             permissions: array
+            isTemplate: boolean
         
         """
         body = self._camelize_dict_keys(body)

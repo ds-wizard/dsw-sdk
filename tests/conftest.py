@@ -8,6 +8,7 @@ from betamax import Betamax
 from pytest_data import get_data
 
 from dsw_sdk import DataStewardshipWizardSDK
+from dsw_sdk.high_level_api.dto.questionnaire import PRIVATE_QUESTIONNAIRE, RESTRICTED_QUESTIONNAIRE
 from dsw_sdk.high_level_api.dto.template import TemplateAllowedPackage
 from dsw_sdk.http_client.requests_impl.http_client import SessionHttpClient
 

@@ -210,3 +210,18 @@ class QuestionnaireReportDTO(AttributesMixin):
 class QuestionnaireSimple(AttributesMixin):
     name = StringAttribute()
     uuid = StringAttribute()
+
+
+class QuestionnaireCreateDTO(AttributesMixin):
+    name = StringAttribute()
+    package_id = StringAttribute()
+    sharing = StringAttribute(choices=QUESTIONNAIRE_SHARING)
+    visibility = StringAttribute(choices=QUESTIONNAIRE_VISIBILITIES)
+    tag_uuids = ListAttribute(StringType(), default=[])
+    template_id = StringAttribute(nullable=True, default=None)
+    format_uuid = StringAttribute(nullable=True, default=None)
+
+
+class QuestionnaireCreateFromTemplateDTO(AttributesMixin):
+    name = StringAttribute()
+    questionnaire_uuid = StringAttribute()

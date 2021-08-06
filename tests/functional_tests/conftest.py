@@ -107,7 +107,7 @@ def registry_package_id(dsw_sdk):
 
 def _create_questionnaire(dsw_sdk, package, data=None):
     uuid = dsw_sdk.api.post_questionnaires(body={
-        'name': 'Test',
+        'name': 'test',
         'packageId': package['id'],
         'visibility': PRIVATE_QUESTIONNAIRE,
         'sharing': RESTRICTED_QUESTIONNAIRE,
@@ -115,6 +115,7 @@ def _create_questionnaire(dsw_sdk, package, data=None):
         **(data or {}),
     }).json()['uuid']
     questionnaire_data = dsw_sdk.api.get_questionnaire(uuid).json()
+    questionnaire_data['package_id'] = package['id']
     return Questionnaire(dsw_sdk, __update_attrs=questionnaire_data)
 
 
@@ -124,9 +125,46 @@ def questionnaire(dsw_sdk, package):
 
 
 @pytest.fixture
+def template_questionnaire(dsw_sdk, questionnaire):
+    return dsw_sdk.api.put_questionnaire(questionnaire.uuid, body={
+        'name': 'test template questionnaire',
+        'description': None,
+        'isTemplate': True,
+        'visibility': 'PrivateQuestionnaire',
+        'sharing': 'RestrictedQuestionnaire',
+        'templateId': None,
+        'formatUuid': None,
+        'permissions': []
+    }).json()
+
+
+@pytest.fixture
 def questionnaires(request, dsw_sdk, package):
     data = get_data(request, 'questionnaires_data', [{}])
     return [_create_questionnaire(dsw_sdk, package, d) for d in data]
+
+
+@pytest.fixture
+def questionnaire_data(request, package):
+    data = {
+        'name': 'test questionnaire',
+        'package_id': package['id'],
+        'sharing': RESTRICTED_QUESTIONNAIRE,
+        'visibility': PRIVATE_QUESTIONNAIRE,
+        'tag_uuids': [],
+        'template_id': None,
+        'format_uuid': None,
+    }
+    return get_data(request, 'questionnaire_data', data)
+
+
+@pytest.fixture
+def questionnaire_template_data(request, template_questionnaire):
+    data = {
+        'name': 'test questionnaire from template',
+        'questionnaire_uuid': template_questionnaire['uuid'],
+    }
+    return get_data(request, 'questionnaire_template_data', data)
 
 
 # ------------------------------- Documents ----------------------------------
