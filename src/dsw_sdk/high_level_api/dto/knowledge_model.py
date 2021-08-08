@@ -2,7 +2,6 @@ from dsw_sdk.common.attributes import (
     AttributesMixin,
     DictAttribute,
     FloatAttribute,
-    IntegerAttribute,
     ListAttribute,
     ObjectAttribute,
     StringAttribute,
@@ -55,7 +54,7 @@ class Question(AttributesMixin):
     expert_uuids = ListAttribute(StringType())
     question_type = StringAttribute(choices=QUESTION_TYPES)
     reference_uuids = ListAttribute(StringType())
-    required_level = IntegerAttribute(nullable=True)
+    required_phase_uuid = StringAttribute(nullable=True)
     tag_uuids = ListAttribute(StringType())
     text = StringAttribute(nullable=True)
     title = StringAttribute()

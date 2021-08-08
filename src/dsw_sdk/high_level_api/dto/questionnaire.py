@@ -57,18 +57,18 @@ MEMBER_TYPES = (GROUP_MEMBER, USER_MEMBER)
 
 CLEAR_REPLY_EVENT = 'ClearReplyEvent'
 SET_LABELS_EVENT = 'SetLabelsEvent'
-SET_LEVEL_EVENT = 'SetLevelEvent'
+SET_PHASE_EVENT = 'SetPhaseEvent'
 SET_REPLY_EVENT = 'SetReplyEvent'
 EVENT_TYPES = (
     CLEAR_REPLY_EVENT,
     SET_LABELS_EVENT,
-    SET_LEVEL_EVENT,
+    SET_PHASE_EVENT,
     SET_REPLY_EVENT,
 )
 
 ANSWERED_INDICATION = 'AnsweredIndication'
-LEVELS_ANSWERED_INDICATION = 'LevelsAnsweredIndication'
-INDICATIONS_TYPES = (ANSWERED_INDICATION, LEVELS_ANSWERED_INDICATION)
+PHASES_ANSWERED_INDICATION = 'PhasesAnsweredIndication'
+INDICATIONS_TYPES = (ANSWERED_INDICATION, PHASES_ANSWERED_INDICATION)
 
 INTEGRATION_TYPE = 'IntegrationType'
 PLAIN_TYPE = 'PlainType'
@@ -177,8 +177,8 @@ class ClearReplyEvent(QuestionnaireEvent):
     path = StringAttribute()
 
 
-class SetLevelEvent(QuestionnaireEvent):
-    level = IntegerAttribute()
+class SetPhaseEvent(QuestionnaireEvent):
+    phase = StringAttribute()
 
 
 class SetLabelsEvent(QuestionnaireEvent):
@@ -196,14 +196,14 @@ class AnsweredIndication(Indication):
     pass
 
 
-class LevelsAnsweredIndication(Indication):
+class PhasesAnsweredIndication(Indication):
     pass
 
 
 class QuestionnaireReportDTO(AttributesMixin):
     indications = ListAttribute(MappingType('indication_type', {
         ANSWERED_INDICATION: ObjectType(AnsweredIndication),
-        LEVELS_ANSWERED_INDICATION: ObjectType(LevelsAnsweredIndication),
+        PHASES_ANSWERED_INDICATION: ObjectType(PhasesAnsweredIndication),
     }))
 
 

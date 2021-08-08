@@ -3,7 +3,6 @@ from dsw_sdk.common.attributes import (
     BoolAttribute,
     DateTimeAttribute,
     DictAttribute,
-    IntegerAttribute,
     ListAttribute,
     ObjectAttribute,
     StringAttribute,
@@ -29,10 +28,10 @@ from dsw_sdk.high_level_api.dto.questionnaire import (
     QuestionnaireVersion,
     Reply,
     SET_LABELS_EVENT,
-    SET_LEVEL_EVENT,
+    SET_PHASE_EVENT,
     SET_REPLY_EVENT,
     SetLabelsEvent,
-    SetLevelEvent,
+    SetPhaseEvent,
     SetReplyEvent,
 )
 from dsw_sdk.high_level_api.dto.template import TemplateSimple
@@ -50,7 +49,7 @@ class Questionnaire(Model):
     events = ListAttribute(MappingType('type', {
         SET_REPLY_EVENT: ObjectType(SetReplyEvent),
         CLEAR_REPLY_EVENT: ObjectType(ClearReplyEvent),
-        SET_LEVEL_EVENT: ObjectType(SetLevelEvent),
+        SET_PHASE_EVENT: ObjectType(SetPhaseEvent),
         SET_LABELS_EVENT: ObjectType(SetLabelsEvent),
     }))
     format = ObjectAttribute(TemplateFormat, nullable=True)
@@ -58,7 +57,7 @@ class Questionnaire(Model):
     is_template = BoolAttribute()
     knowledge_model = ObjectAttribute(KnowledgeModel)
     labels = DictAttribute(StringType(), StringType())
-    level = IntegerAttribute()
+    phase_uuid = StringAttribute()
     name = StringAttribute()
     package = ObjectAttribute(PackageSimpleDTO)
     package_id = StringAttribute()
