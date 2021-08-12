@@ -222,12 +222,6 @@ class LowLevelAPI:
         body = self._camelize_dict_keys(body)
         return self._http_client.post(f'/knowledge-models/preview', body=body, **kwargs)
     
-    def get_levels(self, **kwargs) -> HttpResponse:
-        return self._http_client.get(f'/levels', **kwargs)
-    
-    def get_metrics(self, **kwargs) -> HttpResponse:
-        return self._http_client.get(f'/metrics', **kwargs)
-    
     def get_branch_migrations_current(self, b_uuid: str, **kwargs) -> HttpResponse:
         return self._http_client.get(f'/branches/{b_uuid}/migrations/current', **kwargs)
     
@@ -341,6 +335,7 @@ class LowLevelAPI:
         query_params:
             q [optional]: string
             isTemplate [optional]: boolean
+            userUuids [optional]: string
             page [optional]: integer
             size [optional]: integer
             sort [optional]: string
@@ -470,6 +465,9 @@ class LowLevelAPI:
         """
         body = self._camelize_dict_keys(body)
         return self._http_client.post(f'/questionnaires/{qtn_uuid}/revert/preview', body=body, **kwargs)
+    
+    def post_questionnaire_squash(self, qtn_uuid: str, **kwargs) -> HttpResponse:
+        return self._http_client.post(f'/questionnaires/{qtn_uuid}/squash', **kwargs)
     
     def post_registry_signup(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
@@ -668,6 +666,7 @@ class LowLevelAPI:
         """
         query_params:
             q [optional]: string
+            role [optional]: string
             page [optional]: integer
             size [optional]: integer
             sort [optional]: string

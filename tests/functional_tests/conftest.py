@@ -62,8 +62,9 @@ def _create_template(dsw_sdk, template_data):
 
 
 @pytest.fixture
-def template(dsw_sdk, template_data):
-    return _create_template(dsw_sdk, template_data)
+def template(request, dsw_sdk, template_data):
+    data = get_data(request, 'template_data', {})
+    return _create_template(dsw_sdk, {**template_data, **data})
 
 
 @pytest.fixture
@@ -79,14 +80,7 @@ def templates(request, dsw_sdk, template_data):
 
 @pytest.fixture
 def registry_template_id(dsw_sdk):
-    id_ = 'dsw:science-europe:1.4.1'
-    yield id_
-    dsw_sdk.templates.delete_templates(ids=[id_])
-
-
-@pytest.fixture
-def registry_outdated_template_id(dsw_sdk):
-    id_ = 'dsw:science-europe:1.4.0'
+    id_ = 'dsw:science-europe:1.5.0'
     yield id_
     dsw_sdk.templates.delete_templates(ids=[id_])
 
