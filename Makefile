@@ -40,8 +40,11 @@ functional_tests:
 	tox -e functional_tests
 
 record_test_cassettes:
-	rm -f tests/fixtures/cassettes/*
-	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --recreate-cassettes tests/
+	rm -f tests/fixtures/cassettes/*"${TESTS}"*
+	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --recreate-cassettes -k "${TESTS}" tests/
+
+tests_no_cassettes:
+	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --no-cassettes -k "${TESTS}" tests/
 
 doctest:
 	PYTHONPATH="`pwd`/src:${PYTHONPATH}" pytest --doctest-modules "${FILE}"
