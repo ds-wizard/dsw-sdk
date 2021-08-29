@@ -7,7 +7,7 @@
 # DSW SDK
 
 
-## Introduction
+### Introduction
 
 This projects aims at providing unified and easy-to-use Python library for
 communicating with the Data Stewardship Wizard API. For more info about
@@ -15,7 +15,7 @@ the DSW project itself, see [official webpage](https://ds-wizard.org/) or the
 [API documentation](https://api.demo.ds-wizard.org/swagger-ui/).
 
 
-## Installation
+### Installation
 
 You can install this library via PyPI:
 
@@ -24,7 +24,7 @@ pip install dsw-sdk
 ```
 
 
-## Quickstart
+### Quickstart
 
 The only mandatory step need in order to get going is to initialize the whole
 SDK and tell it, where is the DSW API located and how to connect to it:
@@ -47,7 +47,7 @@ encourage you **not** to store secrets like passwords in the source code.
 There are better mechanisms (env variables) introduced in the docs.
 
 
-## Basic usage
+### Basic usage
 
 Most actions should be done via the high-level interfaces provided on an 
 instance of the `DataStewardshipWizardSDK` class. These interfaces operate with 
@@ -74,3 +74,8 @@ user.delete()
 ```
 
 For more advanced usage, see the [docs](https://dsw-sdk.readthedocs.io/en/latest/).
+
+
+## Contributing
+
+Want to fix a bug or help with implementing new features? Don't hesitate to contact [us](mailto:jakubdrahosJD@seznam.cz) and read the [contributing doc](https://github.com/ds-wizard/dsw-sdk/blob/develop/contributing.md).

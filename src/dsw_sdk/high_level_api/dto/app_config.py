@@ -148,7 +148,6 @@ class AppConfigQuestionnaireFeedback(AttributesMixin):
 
 class AppConfigQuestionnaire(AttributesMixin):
     feedback = ObjectAttribute(AppConfigQuestionnaireFeedback)
-    levels = ObjectAttribute(SimpleFeature)
     questionnaire_creation = StringAttribute(choices=QUESTIONNAIRE_CREATION)
     questionnaire_sharing = ObjectAttribute(AppConfigQuestionnaireSharing)
     questionnaire_visibility = ObjectAttribute(

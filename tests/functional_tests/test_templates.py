@@ -127,12 +127,18 @@ def test_delete_many_templates_via_organization_id(dsw_sdk, templates):
 
 
 @pytest.mark.parametrize('bulk_update', [True, False])
+@use_data(template_data={
+    'organization_id': 'dsw',
+    'template_id': 'science-europe',
+    'version': '1.4.1',
+})
 def test_update_templates(
     dsw_sdk,
+    template,
     registry_template_id,
-    registry_outdated_template_id,
     bulk_update,
 ):
+    registry_outdated_template_id = 'dsw:science-europe:1.4.1'
     # Make sure that we have the outdated template from the registry
     dsw_sdk.templates.pull_templates([registry_outdated_template_id])
     dsw_sdk.templates.get_template(registry_outdated_template_id)
