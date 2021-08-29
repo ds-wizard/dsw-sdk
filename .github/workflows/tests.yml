@@ -4,23 +4,24 @@ name: Tests
 
 on:
   push:
+    branches-ignore:
+      - master
     paths:
-    - '.github/workflows/tests.yml'
-    - 'src/**'
-    - 'tests/**'
-    - 'Pipfile.lock'
-    # Even if we change the packaging, we should test it as we are
-    # testing against installation and not the source codes only
-    - 'pyproject.toml'
-    - 'setup.cfg'
-    - 'tox.ini'
+      - '.github/workflows/tests.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'Pipfile.lock'
+      # Even if we change the packaging, we should test it as we are
+      # testing against installation and not the source codes only
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'tox.ini'
   pull_request:
     branches:
-    - master
+      - master
 
 jobs:
   tests:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -29,18 +30,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: python -m pip install --upgrade pip tox
+
     - name: Test with tox
       env:
         # Disable the spinner as it massively pollutes the output
         TOX_PARALLEL_NO_SPINNER: 1
       # Running tests in parallel with `-p` option
       run: tox -p
+
     - name: Upload test results
       uses: actions/upload-artifact@v2
       # Use always() to always run this step to publish test results when there are test failures
