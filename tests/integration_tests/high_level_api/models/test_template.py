@@ -31,11 +31,11 @@ def test_create_template_with_files(dsw_sdk, template_data):
     # pass dict representation of the object.
     template.files = [{
         'content': '<html>Some content</html>',
-        'file_name': 'some_filename.html',
+        'file_name': 'some_filename2.html',
     }]
     # While extending an existing list, we must pass the actual object
     template.files.append(
-        TemplateFile(dsw_sdk, content='123', file_name='foo.txt'),
+        TemplateFile(dsw_sdk, content='123', file_name='foo2.txt'),
     )
 
     template.save()
