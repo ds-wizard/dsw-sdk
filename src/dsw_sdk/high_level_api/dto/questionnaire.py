@@ -178,7 +178,7 @@ class ClearReplyEvent(QuestionnaireEvent):
 
 
 class SetPhaseEvent(QuestionnaireEvent):
-    phase = StringAttribute()
+    phase = StringAttribute(nullable=True)
 
 
 class SetLabelsEvent(QuestionnaireEvent):
