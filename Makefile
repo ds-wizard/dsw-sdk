@@ -18,7 +18,7 @@ pylint:
 	pylint "${FILE}"
 
 mypy:
-	mypy "${FILE}"
+	mypy --install-types --non-interactive "${FILE}"
 
 flake8:
 	flake8 --statistics --show-source "${FILE}"
