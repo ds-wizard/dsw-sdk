@@ -80,7 +80,7 @@ def templates(request, dsw_sdk, template_data):
 
 @pytest.fixture
 def registry_template_id(dsw_sdk):
-    id_ = 'dsw:science-europe:1.6.0'
+    id_ = 'dsw:science-europe:1.7.0'
     yield id_
     dsw_sdk.templates.delete_templates(ids=[id_])
 
