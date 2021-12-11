@@ -298,8 +298,14 @@ class LowLevelAPI:
         body = self._camelize_dict_keys(body)
         return self._http_client.put(f'/users/current', body=body, **kwargs)
     
-    def get_configs_bootstrap(self, **kwargs) -> HttpResponse:
-        return self._http_client.get(f'/configs/bootstrap', **kwargs)
+    def get_configs_bootstrap(self, query_params: Optional[Dict[str, Any]] = None, **kwargs) -> HttpResponse:
+        """
+        query_params:
+            clientUrl [optional]: string
+        
+        """
+        query_params = self._camelize_dict_keys(query_params)
+        return self._http_client.get(f'/configs/bootstrap', params=query_params, **kwargs)
     
     def post_questionnaires(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
@@ -425,6 +431,12 @@ class LowLevelAPI:
     
     def get_template_assets(self, template_id: str, **kwargs) -> HttpResponse:
         return self._http_client.get(f'/templates/{template_id}/assets', **kwargs)
+    
+    def post_configs_app_logo(self, **kwargs) -> HttpResponse:
+        return self._http_client.post(f'/configs/app/logo', **kwargs)
+    
+    def delete_configs_app_logo(self, **kwargs) -> HttpResponse:
+        return self._http_client.delete(f'/configs/app/logo', **kwargs)
     
     def get_user(self, u_uuid: str, **kwargs) -> HttpResponse:
         return self._http_client.get(f'/users/{u_uuid}', **kwargs)
