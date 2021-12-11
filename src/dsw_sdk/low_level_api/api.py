@@ -35,16 +35,6 @@ class LowLevelAPI:
         else:
             return data
     
-    def post_submissions(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
-        """
-        body:
-            docUuid: None
-            serviceId: string
-        
-        """
-        body = self._camelize_dict_keys(body)
-        return self._http_client.post(f'/submissions', body=body, **kwargs)
-    
     def post_questionnaire_migrations(self, qtn_uuid: str, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
         body:
@@ -129,6 +119,9 @@ class LowLevelAPI:
         body = self._camelize_dict_keys(body)
         return self._http_client.put(f'/questionnaires/{qtn_uuid}', body=body, **kwargs)
     
+    def delete_document(self, doc_uuid: str, **kwargs) -> HttpResponse:
+        return self._http_client.delete(f'/documents/{doc_uuid}', **kwargs)
+    
     def post_questionnaires_from_template(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
         body:
@@ -168,7 +161,6 @@ class LowLevelAPI:
         query_params:
             organizationId [optional]: string
             templateId [optional]: string
-            pkgId [optional]: string
         
         """
         query_params = self._camelize_dict_keys(query_params)
@@ -188,9 +180,6 @@ class LowLevelAPI:
         """
         body = self._camelize_dict_keys(body)
         return self._http_client.put(f'/questionnaires/{qtn_uuid}/migrations/current', body=body, **kwargs)
-    
-    def get_document_available_submission_services(self, doc_uuuid: str, **kwargs) -> HttpResponse:
-        return self._http_client.get(f'/documents/{doc_uuuid}/available-submission-services', **kwargs)
     
     def post_template_files(self, template_id: str, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
@@ -348,6 +337,18 @@ class LowLevelAPI:
         query_params = self._camelize_dict_keys(query_params)
         return self._http_client.get(f'/auth/{id}', params=query_params, **kwargs)
     
+    def post_document_submissions(self, doc_uuid: str, body: Dict[str, Any], **kwargs) -> HttpResponse:
+        """
+        body:
+            serviceId: string
+        
+        """
+        body = self._camelize_dict_keys(body)
+        return self._http_client.post(f'/documents/{doc_uuid}/submissions', body=body, **kwargs)
+    
+    def get_document_submissions(self, doc_uuid: str, **kwargs) -> HttpResponse:
+        return self._http_client.get(f'/documents/{doc_uuid}/submissions', **kwargs)
+    
     def post_registry_signup(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
         body:
@@ -489,6 +490,9 @@ class LowLevelAPI:
         body = self._camelize_dict_keys(body)
         return self._http_client.post(f'/caches/knowledge-model', body=body, **kwargs)
     
+    def get_document_available_submission_services(self, doc_uuid: str, **kwargs) -> HttpResponse:
+        return self._http_client.get(f'/documents/{doc_uuid}/available-submission-services', **kwargs)
+    
     def post_typehints(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
         body:
@@ -499,6 +503,17 @@ class LowLevelAPI:
         """
         body = self._camelize_dict_keys(body)
         return self._http_client.post(f'/typehints', body=body, **kwargs)
+    
+    def post_admin_operations_executions(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
+        """
+        body:
+            operationName: string
+            parameters: array
+            sectionName: string
+        
+        """
+        body = self._camelize_dict_keys(body)
+        return self._http_client.post(f'/admin/operations/executions', body=body, **kwargs)
     
     def get_(self, **kwargs) -> HttpResponse:
         return self._http_client.get(f'/', **kwargs)
@@ -514,9 +529,6 @@ class LowLevelAPI:
         """
         query_params = self._camelize_dict_keys(query_params)
         return self._http_client.get(f'/questionnaires/{qtn_uuid}/documents', params=query_params, **kwargs)
-    
-    def delete_document(self, doc_uuuid: str, **kwargs) -> HttpResponse:
-        return self._http_client.delete(f'/documents/{doc_uuuid}', **kwargs)
     
     def post_questionnaire_versions(self, qtn_uuid: str, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
@@ -778,3 +790,6 @@ class LowLevelAPI:
     
     def post_questionnaire_migrations_current_completion(self, qtn_uuid: str, **kwargs) -> HttpResponse:
         return self._http_client.post(f'/questionnaires/{qtn_uuid}/migrations/current/completion', **kwargs)
+    
+    def get_admin_operations(self, **kwargs) -> HttpResponse:
+        return self._http_client.get(f'/admin/operations', **kwargs)

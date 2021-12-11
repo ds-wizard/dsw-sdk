@@ -3,7 +3,6 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 
 [requires]
-python_version = "3.7"
 
 [packages]
 pyjwt = "*"
@@ -17,6 +16,7 @@ flake8 = "*"
 jinja2 = "*"
 mock = "*"
 mypy = "*"
+typed-ast = "*"
 pylint = "*"
 pytest = "*"
 pytest-cov = "*"
