@@ -188,7 +188,7 @@ class Config:
         if not conf_file:
             return {}
 
-        with open(conf_file, 'r') as file:
+        with open(conf_file, 'r', encoding='utf-8') as file:
             file_config = yaml.safe_load(file)
             if cls._FILE_SECTION not in file_config:
                 raise KeyError(
