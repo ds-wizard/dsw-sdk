@@ -80,7 +80,7 @@ def templates(request, dsw_sdk, template_data):
 
 @pytest.fixture
 def registry_template_id(dsw_sdk):
-    id_ = 'dsw:science-europe:1.7.0'
+    id_ = 'dsw:science-europe:1.8.0'
     yield id_
     dsw_sdk.templates.delete_templates(ids=[id_])
 
@@ -105,7 +105,7 @@ def _create_questionnaire(dsw_sdk, package, data=None):
         'packageId': package['id'],
         'visibility': PRIVATE_QUESTIONNAIRE,
         'sharing': RESTRICTED_QUESTIONNAIRE,
-        'tagUuids': [],
+        'questionTagUuids': [],
         **(data or {}),
     }).json()['uuid']
     questionnaire_data = dsw_sdk.api.get_questionnaire(uuid).json()
@@ -124,11 +124,12 @@ def template_questionnaire(dsw_sdk, questionnaire):
         'name': 'test template questionnaire',
         'description': None,
         'isTemplate': True,
-        'visibility': 'PrivateQuestionnaire',
-        'sharing': 'RestrictedQuestionnaire',
+        'visibility': PRIVATE_QUESTIONNAIRE,
+        'sharing': RESTRICTED_QUESTIONNAIRE,
         'templateId': None,
         'formatUuid': None,
-        'permissions': []
+        'permissions': [],
+        'projectTags': [],
     }).json()
 
 

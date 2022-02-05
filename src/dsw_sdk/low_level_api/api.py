@@ -111,6 +111,7 @@ class LowLevelAPI:
         body:
             isTemplate: boolean
             visibility: None
+            projectTags: array
             name: string
             permissions: array
             sharing: None
@@ -310,8 +311,8 @@ class LowLevelAPI:
     def post_questionnaires(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
         body:
-            tagUuids: array
             packageId: string
+            questionTagUuids: array
             visibility: None
             name: string
             sharing: None
@@ -325,7 +326,10 @@ class LowLevelAPI:
         query_params:
             q [optional]: string
             isTemplate [optional]: boolean
+            projectTags [optional]: string
+            projectTagsOp [optional]: string
             userUuids [optional]: string
+            userUuidsOp [optional]: string
             page [optional]: integer
             size [optional]: integer
             sort [optional]: string
@@ -572,6 +576,19 @@ class LowLevelAPI:
     def post_packages_bundle(self, **kwargs) -> HttpResponse:
         return self._http_client.post(f'/packages/bundle', **kwargs)
     
+    def get_questionnaires_project_tags_suggestions(self, query_params: Optional[Dict[str, Any]] = None, **kwargs) -> HttpResponse:
+        """
+        query_params:
+            q [optional]: string
+            exclude [optional]: string
+            page [optional]: integer
+            size [optional]: integer
+            sort [optional]: string
+        
+        """
+        query_params = self._camelize_dict_keys(query_params)
+        return self._http_client.get(f'/questionnaires/project-tags/suggestions', params=query_params, **kwargs)
+    
     def post_feedbacks(self, body: Dict[str, Any], **kwargs) -> HttpResponse:
         """
         body:
@@ -620,6 +637,8 @@ class LowLevelAPI:
         """
         query_params:
             q [optional]: string
+            select [optional]: string
+            exclude [optional]: string
             page [optional]: integer
             size [optional]: integer
             sort [optional]: string

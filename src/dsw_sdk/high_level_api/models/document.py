@@ -1,11 +1,14 @@
+from dsw_sdk.common.types import ObjectType
 from dsw_sdk.common.attributes import (
     DateTimeAttribute,
+    ListAttribute,
     ObjectAttribute,
     StringAttribute,
 )
 from dsw_sdk.high_level_api.dto.questionnaire import QuestionnaireSimple
 from dsw_sdk.high_level_api.dto.template import TemplateSimpleDTO
 from dsw_sdk.high_level_api.models.model import Model
+from dsw_sdk.high_level_api.dto.common import SubmissionDTO
 
 
 DONE_DOCUMENT_STATE = 'DoneDocumentState'
@@ -21,13 +24,16 @@ DOCUMENT_STATES = (
 
 
 class Document(Model):
+    content_type = StringAttribute(nullable=True)
     created_at = DateTimeAttribute()
     creator_uuid = StringAttribute(nullable=True)
+    filename = StringAttribute(nullable=True)
     format_uuid = StringAttribute()
     name = StringAttribute()
     questionnaire = ObjectAttribute(QuestionnaireSimple, nullable=True)
     questionnaire_event_uuid = StringAttribute(nullable=True)
     state = StringAttribute(choices=DOCUMENT_STATES)
+    submissions = ListAttribute(ObjectType(SubmissionDTO))
     template = ObjectAttribute(TemplateSimpleDTO)
 
     def _create(self):

@@ -1,5 +1,5 @@
 FILE := src/dsw_sdk
-API_SWAGGER := https://api.demo.ds-wizard.org/swagger.json
+API_SWAGGER := https://api-demo.ds-wizard.org/swagger.json
 
 
 # ------------------------------ Low-level API -------------------------------

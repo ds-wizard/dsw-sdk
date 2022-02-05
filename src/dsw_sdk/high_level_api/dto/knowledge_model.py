@@ -43,7 +43,13 @@ REFERENCE_TYPES = (
 )
 
 
+class MapEntry(AttributesMixin):
+    key = StringAttribute()
+    value = StringAttribute()
+
+
 class Chapter(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     question_uuids = ListAttribute(StringType())
     text = StringAttribute(nullable=True)
     title = StringAttribute()
@@ -51,6 +57,7 @@ class Chapter(AttributesMixin):
 
 
 class Question(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     expert_uuids = ListAttribute(StringType())
     question_type = StringAttribute(choices=QUESTION_TYPES)
     reference_uuids = ListAttribute(StringType())
@@ -78,6 +85,7 @@ class ValueQuestion(Question):
 
 
 class IntegrationQuestion(Question):
+    integration_uuid = StringAttribute()
     props = DictAttribute(StringType(), StringType())
 
 
@@ -89,6 +97,7 @@ class MetricMeasure(AttributesMixin):
 
 class Answer(AttributesMixin):
     advice = StringAttribute(nullable=True)
+    annotations = ListAttribute(ObjectType(MapEntry))
     follow_up_uuids = ListAttribute(StringType())
     label = StringAttribute()
     metric_measures = ListAttribute(ObjectType(MetricMeasure))
@@ -96,17 +105,20 @@ class Answer(AttributesMixin):
 
 
 class Choice(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     label = StringAttribute()
     uuid = StringAttribute()
 
 
 class Expert(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     email = StringAttribute()
     name = StringAttribute()
     uuid = StringAttribute()
 
 
 class Reference(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     uuid = StringAttribute()
     reference_type = StringAttribute(choices=REFERENCE_TYPES)
 
@@ -126,25 +138,45 @@ class CrossReference(Reference):
 
 
 class Integration(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     id = StringAttribute()
     item_url = StringAttribute()
     logo = StringAttribute()
     name = StringAttribute()
     props = ListAttribute(StringType())
     request_body = StringAttribute()
-    request_headers = DictAttribute(StringType(), StringType())
+    request_headers = ListAttribute(ObjectType(MapEntry))
     request_method = StringAttribute()
     request_url = StringAttribute()
     response_id_field = StringAttribute()
+    response_item_id = StringAttribute()
+    response_item_template = StringAttribute()
+    response_item_url = StringAttribute()
     response_list_field = StringAttribute()
     response_name_field = StringAttribute()
     uuid = StringAttribute()
 
 
 class Tag(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     color = StringAttribute()
     description = StringAttribute(nullable=True)
     name = StringAttribute()
+    uuid = StringAttribute()
+
+
+class Phase(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
+    description = StringAttribute(nullable=True)
+    title = StringAttribute()
+    uuid = StringAttribute()
+
+
+class Metric(AttributesMixin):
+    abbreviation = StringAttribute(nullable=True)
+    annotations = ListAttribute(ObjectType(MapEntry))
+    description = StringAttribute(nullable=True)
+    title = StringAttribute()
     uuid = StringAttribute()
 
 
@@ -154,6 +186,8 @@ class KnowledgeModelEntities(AttributesMixin):
     choices = DictAttribute(StringType(), ObjectType(Choice))
     experts = DictAttribute(StringType(), ObjectType(Expert))
     integrations = DictAttribute(StringType(), ObjectType(Integration))
+    metrics = DictAttribute(StringType(), ObjectType(Metric))
+    phases = DictAttribute(StringType(), ObjectType(Phase))
     questions = DictAttribute(StringType(), MappingType('question_type', {
         OPTIONS_QUESTION: ObjectType(OptionsQuestion),
         MULTI_CHOICE_QUESTION: ObjectType(MultiChoiceQuestion),
@@ -170,8 +204,11 @@ class KnowledgeModelEntities(AttributesMixin):
 
 
 class KnowledgeModel(AttributesMixin):
+    annotations = ListAttribute(ObjectType(MapEntry))
     chapter_uuids = ListAttribute(StringType())
     entities = ObjectAttribute(KnowledgeModelEntities)
     integration_uuids = ListAttribute(StringType())
+    metric_uuids = ListAttribute(StringType())
+    phase_uuids = ListAttribute(StringType())
     tag_uuids = ListAttribute(StringType())
     uuid = StringAttribute()
