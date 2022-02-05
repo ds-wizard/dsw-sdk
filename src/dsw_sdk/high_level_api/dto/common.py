@@ -6,6 +6,7 @@ from dsw_sdk.common.attributes import (
     StringAttribute,
 )
 from dsw_sdk.common.types import StringType
+from dsw_sdk.high_level_api.dto.user import UserSuggestion
 
 
 OUTDATED_PACKAGE_STATE = 'OutdatedPackageState'
@@ -17,6 +18,15 @@ PACKAGE_STATES = (
     UNKNOWN_PACKAGE_STATE,
     UNPUBLISHED_PACKAGE_STATE,
     UP_TO_DATE_PACKAGE_STATE,
+)
+
+DONE_SUBMISSION_STATE = 'DoneSubmissionState'
+ERROR_SUBMISSION_STATE = 'ErrorSubmissionState'
+IN_PROGRESS_SUBMISSION_STATE = 'InProgressSubmissionState'
+SUBMISSION_STATES = (
+    DONE_SUBMISSION_STATE,
+    ERROR_SUBMISSION_STATE,
+    IN_PROGRESS_SUBMISSION_STATE,
 )
 
 
@@ -34,6 +44,7 @@ class PackageSimpleDTO(AttributesMixin):
     name = StringAttribute()
     organization = ObjectAttribute(OrganizationSimple, nullable=True)
     organization_id = StringAttribute()
+    remote_latest_version = StringAttribute(nullable=True)
     state = StringAttribute(choices=PACKAGE_STATES)
     version = StringAttribute()
     versions = ListAttribute(StringType())
@@ -43,3 +54,16 @@ class PackageSimple(AttributesMixin):
     id = StringAttribute()
     name = StringAttribute()
     version = StringAttribute()
+
+
+class SubmissionDTO(AttributesMixin):
+    created_at = DateTimeAttribute()
+    created_by = ObjectAttribute(UserSuggestion)
+    document_uuid = StringAttribute()
+    location = StringAttribute(nullable=True)
+    returned_data = StringAttribute()
+    service_id = StringAttribute()
+    service_name = StringAttribute(nullable=True)
+    state = StringAttribute(choices=SUBMISSION_STATES)
+    updated_at = DateTimeAttribute()
+    uuid = StringAttribute()

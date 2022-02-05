@@ -120,7 +120,11 @@ class AppConfigLookAndFeel(AttributesMixin):
     custom_menu_links = ListAttribute(
         ObjectType(AppConfigLookAndFeelCustomMenuLink)
     )
+    illustrations_color = StringAttribute(nullable=True)
     login_info = StringAttribute(nullable=True)
+    logo_url = StringAttribute(nullable=True)
+    primary_color = StringAttribute(nullable=True)
+    style_url = StringAttribute(nullable=True)
 
 
 class AppConfigRegistry(AttributesMixin):
@@ -146,8 +150,14 @@ class AppConfigQuestionnaireFeedback(AttributesMixin):
     token = StringAttribute()
 
 
+class AppConfigQuestionnaireProjectTagging(AttributesMixin):
+    enabled = BoolAttribute()
+    tags = ListAttribute(StringType())
+
+
 class AppConfigQuestionnaire(AttributesMixin):
     feedback = ObjectAttribute(AppConfigQuestionnaireFeedback)
+    project_tagging = ObjectAttribute(AppConfigQuestionnaireProjectTagging)
     questionnaire_creation = StringAttribute(choices=QUESTIONNAIRE_CREATION)
     questionnaire_sharing = ObjectAttribute(AppConfigQuestionnaireSharing)
     questionnaire_visibility = ObjectAttribute(
@@ -191,6 +201,10 @@ class AppConfigSubmissionService(AttributesMixin):
 class AppConfigSubmission(AttributesMixin):
     enabled = BoolAttribute()
     services = ListAttribute(ObjectType(AppConfigSubmissionService))
+
+
+class AppConfigFeature(AttributesMixin):
+    client_customization_enabled = BoolAttribute()
 
 
 class AppConfigChangeDTO(AttributesMixin):

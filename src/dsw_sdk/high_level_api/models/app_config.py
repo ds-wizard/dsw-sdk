@@ -3,6 +3,7 @@ from dsw_sdk.high_level_api.dto.app_config import (
     AppConfigAuth,
     AppConfigChangeDTO,
     AppConfigDashboard,
+    AppConfigFeature,
     AppConfigKnowledgeModel,
     AppConfigLookAndFeel,
     AppConfigOrganization,
@@ -19,6 +20,7 @@ class AppConfig(Model):
     authentication = ObjectAttribute(AppConfigAuth)
     created_at = DateTimeAttribute()
     dashboard = ObjectAttribute(AppConfigDashboard)
+    feature = ObjectAttribute(AppConfigFeature)
     knowledge_model = ObjectAttribute(AppConfigKnowledgeModel)
     look_and_feel = ObjectAttribute(AppConfigLookAndFeel)
     organization = ObjectAttribute(AppConfigOrganization)

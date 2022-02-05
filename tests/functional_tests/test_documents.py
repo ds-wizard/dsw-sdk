@@ -11,6 +11,9 @@ def _modify_documents(docs):
     """
     for doc in docs:
         doc.state = DONE_DOCUMENT_STATE
+        # The `content_type` field is sometimes filled from the
+        # server and sometimes it is not (for unknown reasons).
+        doc.content_type = 'application/json'
 
 
 def test_get_document(dsw_sdk, document):

@@ -20,6 +20,7 @@ class TemplateAssetCreateDTO(AttributesMixin):
 
 
 class TemplateAsset(Model):
+    app_uuid = StringAttribute()
     content = StringAttribute()
     content_type = StringAttribute()
     file_name = StringAttribute()

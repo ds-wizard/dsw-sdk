@@ -1,5 +1,4 @@
 from dsw_sdk.common.attributes import (
-    Alias,
     BoolAttribute,
     DateTimeAttribute,
     DictAttribute,
@@ -8,6 +7,7 @@ from dsw_sdk.common.attributes import (
     StringAttribute,
 )
 from dsw_sdk.common.types import (
+    ListType,
     MappingType,
     ObjectType,
     StringType,
@@ -17,16 +17,29 @@ from dsw_sdk.high_level_api.dto.common import (
 )
 from dsw_sdk.high_level_api.dto.knowledge_model import KnowledgeModel
 from dsw_sdk.high_level_api.dto.questionnaire import (
+    ADD_COMMENT_EVENT,
+    AddCommentEvent,
     CLEAR_REPLY_EVENT,
     ClearReplyEvent,
+    DELETE_COMMENT_EVENT,
+    DELETE_COMMENT_THREAD_EVENT,
+    DeleteCommentEvent,
+    DeleteCommentThreadEvent,
+    EDIT_COMMENT_EVENT,
+    EditCommentEvent,
     QUESTIONNAIRE_SHARING,
     QUESTIONNAIRE_STATES,
     QUESTIONNAIRE_VISIBILITIES,
+    QuestionnaireCommentThread,
     QuestionnaireCreateDTO,
     QuestionnaireCreateFromTemplateDTO,
     QuestionnairePermRecordDTO,
     QuestionnaireVersion,
+    REOPEN_COMMENT_THREAD_EVENT,
+    RESOLVE_COMMENT_THREAD_EVENT,
+    ReopenCommentThreadEvent,
     Reply,
+    ResolveCommentThreadEvent,
     SET_LABELS_EVENT,
     SET_PHASE_EVENT,
     SET_REPLY_EVENT,
@@ -43,31 +56,40 @@ from dsw_sdk.high_level_api.models.templates.template import (
 
 
 class Questionnaire(Model):
+    comment_threads_map = DictAttribute(
+        StringType(),
+        ListType(ObjectType(QuestionnaireCommentThread)),
+    )
     created_at = DateTimeAttribute()
     creator_uuid = StringAttribute(nullable=True)
     description = StringAttribute(nullable=True)
     events = ListAttribute(MappingType('type', {
-        SET_REPLY_EVENT: ObjectType(SetReplyEvent),
+        ADD_COMMENT_EVENT: ObjectType(AddCommentEvent),
         CLEAR_REPLY_EVENT: ObjectType(ClearReplyEvent),
-        SET_PHASE_EVENT: ObjectType(SetPhaseEvent),
+        DELETE_COMMENT_EVENT: ObjectType(DeleteCommentEvent),
+        DELETE_COMMENT_THREAD_EVENT: ObjectType(DeleteCommentThreadEvent),
+        EDIT_COMMENT_EVENT: ObjectType(EditCommentEvent),
+        REOPEN_COMMENT_THREAD_EVENT: ObjectType(ReopenCommentThreadEvent),
+        RESOLVE_COMMENT_THREAD_EVENT: ObjectType(ResolveCommentThreadEvent),
         SET_LABELS_EVENT: ObjectType(SetLabelsEvent),
+        SET_PHASE_EVENT: ObjectType(SetPhaseEvent),
+        SET_REPLY_EVENT: ObjectType(SetReplyEvent),
     }))
     format = ObjectAttribute(TemplateFormat, nullable=True)
     format_uuid = StringAttribute(nullable=True)
     is_template = BoolAttribute()
     knowledge_model = ObjectAttribute(KnowledgeModel)
-    labels = DictAttribute(StringType(), StringType())
-    phase_uuid = StringAttribute()
+    labels = DictAttribute(StringType(), ListType(StringType()))
     name = StringAttribute()
     package = ObjectAttribute(PackageSimpleDTO)
     package_id = StringAttribute()
     permissions = ListAttribute(ObjectType(QuestionnairePermRecordDTO))
+    phase_uuid = StringAttribute(nullable=True)
+    project_tags = ListAttribute(StringType())
     replies = DictAttribute(StringType(), ObjectType(Reply))
-    selected_tag_uuids = ListAttribute(StringType())
+    selected_question_tag_uuids = ListAttribute(StringType())
     sharing = StringAttribute(choices=QUESTIONNAIRE_SHARING)
     state = StringAttribute(choices=QUESTIONNAIRE_STATES)
-    # TODO: Unite with `selected_tag_uuids`
-    tag_uuids = Alias('selected_tag_uuids')
     template = ObjectAttribute(TemplateSimple, nullable=True)
     template_id = StringAttribute(nullable=True)
     updated_at = DateTimeAttribute()

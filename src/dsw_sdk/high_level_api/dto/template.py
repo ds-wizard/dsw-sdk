@@ -82,6 +82,7 @@ class TemplateSimpleDTO(TemplateSimple):
     organization_id = StringAttribute()
     readme = StringAttribute()
     recommended_package_id = StringAttribute(nullable=True)
+    remote_latest_version = StringAttribute(nullable=True)
     state = StringAttribute(choices=TEMPLATE_STATES, read_only=True)
     template_id = StringAttribute()
     usable_packages = ListAttribute(ObjectType(PackageSimpleDTO),
