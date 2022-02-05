@@ -1,7 +1,5 @@
 from pytest_data import use_data
 
-from dsw_sdk.high_level_api.models.questionnaire import Questionnaire
-
 
 def test_get_questionnaire(dsw_sdk, questionnaire):
     uuid = questionnaire.uuid

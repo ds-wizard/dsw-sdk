@@ -8,7 +8,6 @@ from betamax import Betamax
 from pytest_data import get_data
 
 from dsw_sdk import DataStewardshipWizardSDK
-from dsw_sdk.high_level_api.dto.questionnaire import PRIVATE_QUESTIONNAIRE, RESTRICTED_QUESTIONNAIRE
 from dsw_sdk.high_level_api.dto.template import TemplateAllowedPackage
 from dsw_sdk.http_client.requests_impl.http_client import SessionHttpClient
 
@@ -200,7 +199,7 @@ def template_data(package):
             'name': 'JSON Data'
         }],
         'license': 'MIT',
-        'metamodel_version': 6,
+        'metamodel_version': 7,
         'name': 'Test template',
         'organization_id': 'test.org',
         'readme': 'dont read me',

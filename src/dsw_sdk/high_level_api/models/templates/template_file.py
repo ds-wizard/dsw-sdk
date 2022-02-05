@@ -13,6 +13,7 @@ class TemplateFileChangeDTO(AttributesMixin):
 
 
 class TemplateFile(Model):
+    app_uuid = StringAttribute()
     content = StringAttribute()
     file_name = StringAttribute()
 
