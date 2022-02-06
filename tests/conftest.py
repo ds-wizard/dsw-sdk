@@ -199,7 +199,7 @@ def template_data(package):
             'name': 'JSON Data'
         }],
         'license': 'MIT',
-        'metamodel_version': 7,
+        'metamodel_version': 8,
         'name': 'Test template',
         'organization_id': 'test.org',
         'readme': 'dont read me',

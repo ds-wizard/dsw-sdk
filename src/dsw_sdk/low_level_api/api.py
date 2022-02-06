@@ -737,7 +737,6 @@ class LowLevelAPI:
         body:
             kmId: string
             name: string
-            events: array
         
         """
         body = self._camelize_dict_keys(body)
