@@ -126,9 +126,6 @@ def test_delete_many_templates_via_organization_id(dsw_sdk, templates):
             dsw_sdk.templates.get_template(template.id)
 
 
-# This test won't be successful, because the latest version of
-# this template is not compatible with metamodel version 7.
-@pytest.mark.xfail
 @pytest.mark.parametrize('bulk_update', [True, False])
 @use_data(template_data={
     'organization_id': 'dsw',
